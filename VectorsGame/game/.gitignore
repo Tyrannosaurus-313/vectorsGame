@@ -1,2 +1,12 @@
 /Driver.class
 /Vectors.class
+/Grid.class
+/Highscore.class
+/Grid$cellState.class
+/Grid$controlState.class
+/Score.class
+/User.class
+/ComputerPlayerUnit.class
+/ComputerPlayerUnit$controlState.class
+/ScoreCalculator.class
+/Grid$ControlState.class
