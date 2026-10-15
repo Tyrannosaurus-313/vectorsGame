@@ -13,7 +13,7 @@ public class Vectors {
 		if (numRounds > 0 && numRounds < 100)
 			this.numRounds = numRounds;
 		else
-			numRounds = 20;
+			this.numRounds = 20;
 	}
 	
 	public void run() {		
