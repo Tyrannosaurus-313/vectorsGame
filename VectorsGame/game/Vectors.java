@@ -28,7 +28,7 @@ public class Vectors {
 		}
 		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
 		gameGrid.printGrid();
-
+		scnr.close();
 	}
 	
 	public int prevPScore = 0;
