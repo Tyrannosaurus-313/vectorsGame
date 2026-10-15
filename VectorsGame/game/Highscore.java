@@ -16,8 +16,7 @@ public class Highscore {
 	public Highscore()
 	{		
 		filename = "users.dat";	
-//		score = new Score(-1, "Null");
-//		saveFile();
+		score = new Score(-1, "No Record");
 		loadFile();
 	}
 	
