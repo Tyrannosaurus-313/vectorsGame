@@ -9,10 +9,6 @@ public class ScoreCalculator {
 	//Strategy
 	// Search for the largest chain of control states to smallest, compiling the total point counts
 	
-//	public WinState
-//	{
-//		
-//	}
 	public int getPlayerScore() { return playerScore; }
 	public int getComputerScore() { return computerScore; }
 	
@@ -91,36 +87,28 @@ public class ScoreCalculator {
 	
 	public void computeScore(ControlState player, int count)
 	{
-		if (player == ControlState.Player)
+		int points = 0;
+		if (count == 3)
 		{
-			if (count == 3)
-			{
-				playerScore += 4;				
-			}
-			else if (count == 4)
-			{
-				playerScore += 6;				
-			}
-			else if (count == 5)
-			{
-				playerScore += 10;				
-			}
+			points = 4;				
 		}
-		else if (player == ControlState.Computer)
+		else if (count == 4)
 		{
-			if (count == 3)
-			{
-				computerScore += 4;				
-			}
-			else if (count == 4)
-			{
-				computerScore += 6;				
-			}
-			else if (count == 5)
-			{
-				computerScore += 10;				
-			}
-		}		
+			points = 6;				
+		}
+		else if (count == 5)
+		{
+			points = 10;				
+		}
+
+		if (player == ControlState.PLAYER)
+		{
+			playerScore += points;
+		}
+		else if (player == ControlState.COMPUTER)
+		{
+			computerScore += points;
+		}	
 	}
 		
 	public String getWhoIsWinner()
@@ -138,5 +126,4 @@ public class ScoreCalculator {
 			return "Its a tie!";
 		}
 	}
-
 }
