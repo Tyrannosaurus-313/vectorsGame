@@ -27,8 +27,8 @@ public class ScoreCalculator {
 					continue;
 				}
 				
-				ControlState currState = gameGrid.getState(j, i);
-				if (currState != null)
+				ControlState owner = gameGrid.getState(j, i);
+				if (owner != null)
 				{
 					int xCount = 1;
 					for (int sRow = 1; sRow <= 5; sRow++)
@@ -38,7 +38,7 @@ public class ScoreCalculator {
 						{
 							break;
 						}
-						if (currState != gameGrid.getState(j, i + sRow) || checkedCells[j][i + sRow])
+						if (owner != gameGrid.getState(j, i + sRow) || checkedCells[j][i + sRow])
 						{
 							break;
 						}			
@@ -55,7 +55,7 @@ public class ScoreCalculator {
 						{
 							break;
 						}
-						if (currState != gameGrid.getState(j + sCol, i) || checkedCells[j + sCol][i])
+						if (owner != gameGrid.getState(j + sCol, i) || checkedCells[j + sCol][i])
 						{
 							break;
 						}
@@ -70,7 +70,7 @@ public class ScoreCalculator {
 						{
 							checkedCells[j][i + c] = true;
 						}
-						computeScore(currState, xCount);
+						computeScore(owner, xCount);
 					}
 					else
 					{
@@ -78,7 +78,7 @@ public class ScoreCalculator {
 						{
 							checkedCells[j + c][i] = true;
 						}
-						computeScore(currState, yCount);
+						computeScore(owner, yCount);
 					}
 				}
 			}
