@@ -4,10 +4,10 @@ import java.util.Random;
 
 public class ComputerPlayerUnit {
 	enum controlState {
-		Random,
+		RANDOM,
 //		Easy,
-		Defensive,
-		Hard
+		DEFENSIVE,
+		HARD;
 	}
 	
 	public controlState currentState;
