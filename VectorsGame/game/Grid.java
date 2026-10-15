@@ -2,9 +2,13 @@ package game;
 
 public class Grid {
 	enum ControlState {
-		//Null is Empty
-		Player,
-		Computer
+		//Null is Uncontrolled/Empty
+		PLAYER,
+		COMPUTER;
+
+		public char toChar() {
+			return name().charAt(0);
+		}
 	}
 	
 	private ControlState[][] worldGrid = new ControlState[8][8];
@@ -20,14 +24,12 @@ public class Grid {
 		return worldGrid[col][row];
 	}
 	
-	public boolean setCell(int row, int col, ControlState state) {
+	public boolean setCell(int row, int col, ControlState owner) {
 		if (row < worldGrid.length && col < worldGrid[0].length && worldGrid[col][row] == null) {
-			worldGrid[col][row] = state;
+			worldGrid[col][row] = owner;
 			return true;
 		}
-		else {
-			return false;
-		}
+		return false;
 	}
 	
 	public void printGrid()
@@ -43,16 +45,8 @@ public class Grid {
 		System.out.printf("---------------------------------\n");
 	}
 	
-	public char stateToChar(ControlState state)
-	{
-		if (state == ControlState.Player) {
-			return 'P';
-		}
-		else if (state == ControlState.Computer) {
-			return 'C';
-		}
-		else {
-			return ' ';
-		}
+	public char stateToChar(ControlState state) {
+		if (state == null) { return ' '; }
+		return state.toChar();
 	}
 }
