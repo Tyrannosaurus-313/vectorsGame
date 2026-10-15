@@ -2,19 +2,17 @@ package game;
 
 public class Grid {
 	enum ControlState {
-		//Null is Empty
-		Player,
-		Computer
+		//Null is Uncontrolled/Empty
+		PLAYER,
+		COMPUTER;
+
+		public char toChar() {
+			return name().charAt(0);
+		}
 	}
 	
 	private ControlState[][] worldGrid = new ControlState[8][8];
-	public int[] getGridLengths()
-	{
-		int[] lengths = new int[2];
-		lengths[0] = worldGrid.length;
-		lengths[1] = worldGrid[0].length;
-		return lengths;
-	}
+	public final GridSize lengths = new GridSize(worldGrid.length, worldGrid[0].length);
 	
 	public ControlState getState(int row, int col) {
 		return worldGrid[col][row];
@@ -25,9 +23,7 @@ public class Grid {
 			worldGrid[col][row] = state;
 			return true;
 		}
-		else {
-			return false;
-		}
+		return false;		
 	}
 	
 	public void printGrid()
@@ -43,16 +39,8 @@ public class Grid {
 		System.out.printf("---------------------------------\n");
 	}
 	
-	public char stateToChar(ControlState state)
-	{
-		if (state == ControlState.Player) {
-			return 'P';
-		}
-		else if (state == ControlState.Computer) {
-			return 'C';
-		}
-		else {
-			return ' ';
-		}
+	public char stateToChar(ControlState state) {
+		if (state == null) { return ' '; }
+		return state.toChar();
 	}
 }

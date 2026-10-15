@@ -18,31 +18,32 @@ public class ScoreCalculator {
 	
 	public void updateScores(Grid gameGrid)
 	{
+		int colCount = gameGrid.lengths.colCount;
+		int rowCount = gameGrid.lengths.rowCount;
 		playerScore = 0;
 		computerScore = 0;
-		int[] lengths = gameGrid.getGridLengths();
-		boolean[][] checkedCells  = new boolean[lengths[0]][lengths[1]];
-		for (int i = 0; i < lengths[0]; i++)
+		boolean[][] checkedCells  = new boolean[colCount][rowCount];
+		for (int i = 0; i < colCount; i++)
 		{
-			for (int j = 0; j < lengths[1]; j++)
+			for (int j = 0; j < rowCount; j++)
 			{
-				if (checkedCells[j][i])
+				if (checkedCells[i][j])
 				{
 					continue;
 				}
 				
-				ControlState currState = gameGrid.getState(j, i);
+				ControlState currState = gameGrid.getState(i, j);
 				if (currState != null)
 				{
 					int xCount = 1;
 					for (int sRow = 1; sRow <= 5; sRow++)
 					{			
-						System.out.println(i + sRow + " " + lengths[0]);
-						if (i + sRow >= lengths[0])
+//						System.out.println(j + " " + sRow + " " + rowCount);
+						if (j + sRow >= colCount)
 						{
 							break;
 						}
-						if (currState != gameGrid.getState(j, i + sRow) || checkedCells[j][i + sRow])
+						if (currState != gameGrid.getState(i, j + sRow) || checkedCells[i][j + sRow])
 						{
 							break;
 						}			
@@ -54,12 +55,12 @@ public class ScoreCalculator {
 					int yCount = 1;
 					for (int sCol = 1; sCol <= 5; sCol++)
 					{
-						System.out.println(i + sCol + " " + lengths[1]);
-						if (j + sCol >= lengths[1])
+//						System.out.println(i + sCol + " " + colCount);
+						if (i + sCol >= rowCount)
 						{
 							break;
 						}
-						if (currState != gameGrid.getState(j + sCol, i) || checkedCells[j + sCol][i])
+						if (currState != gameGrid.getState(i + sCol, j) || checkedCells[i + sCol][j])
 						{
 							break;
 						}
@@ -72,7 +73,7 @@ public class ScoreCalculator {
 					{
 						for (int c = 0; c < xCount; c++)
 						{
-							checkedCells[j][i + c] = true;
+							checkedCells[i][j + c] = true;
 						}
 						computeScore(currState, xCount);
 					}
@@ -80,7 +81,7 @@ public class ScoreCalculator {
 					{
 						for (int c = 0; c < yCount; c++)
 						{
-							checkedCells[j + c][i] = true;
+							checkedCells[i + c][j] = true;
 						}
 						computeScore(currState, yCount);
 					}
@@ -89,37 +90,29 @@ public class ScoreCalculator {
 		}
 	}
 	
-	public void computeScore(ControlState player, int count)
+	private void computeScore(ControlState player, int count)
 	{
-		if (player == ControlState.Player)
+		int points = 0;
+		if (count == 3)
 		{
-			if (count == 3)
-			{
-				playerScore += 4;				
-			}
-			else if (count == 4)
-			{
-				playerScore += 6;				
-			}
-			else if (count == 5)
-			{
-				playerScore += 10;				
-			}
+			points = 4;				
 		}
-		else if (player == ControlState.Computer)
+		else if (count == 4)
 		{
-			if (count == 3)
-			{
-				computerScore += 4;				
-			}
-			else if (count == 4)
-			{
-				computerScore += 6;				
-			}
-			else if (count == 5)
-			{
-				computerScore += 10;				
-			}
+			points = 6;				
+		}
+		else if (count == 5)
+		{
+			points = 10;				
+		}
+
+		if (player == ControlState.PLAYER)
+		{
+			playerScore += points;
+		}
+		else if (player == ControlState.COMPUTER)
+		{
+			computerScore += points;
 		}		
 	}
 		

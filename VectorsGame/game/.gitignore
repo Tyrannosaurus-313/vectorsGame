@@ -10,3 +10,7 @@
 /ComputerPlayerUnit$controlState.class
 /ScoreCalculator.class
 /Grid$ControlState.class
+/GridSize.class
+/Coordinate.class
+/ComputerPlayerUnit$DIFFICULTY.class
+/ComputerPlayerUnit$CPUState.class
