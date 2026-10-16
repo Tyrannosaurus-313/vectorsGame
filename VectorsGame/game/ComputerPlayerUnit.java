@@ -113,28 +113,6 @@ public class ComputerPlayerUnit {
 		}
 		else if (difficulty == difficulty.HARD) //Weighs the points they could gain in the next turn against blocking the player, picks the better option
 		{
-//			int[] deltaScore = new int[64];//We measure the delta points for each square
-//
-//			ScoreCalculator cloneCalc = new ScoreCalculator();
-//			Grid cloneGrid = new Grid(); //We clone the grid & calc
-//			for (int i = 0; i < 8; i++)
-//			{
-//				for (int j = 0; j < 8; j++)
-//				{
-//					cloneGrid.setCell(i, j, gridRef.getState(i, j));
-//				}
-//			}
-//			cloneCalc.updateScores(cloneGrid);
-//			
-//			int origScore = cloneCalc.getComputerScore();
-//
-//			for (int i = 0; i < 8; i++)
-//			{
-//				for (int j = 0; j < 8; j++)
-//				{
-//					cloneGrid.setCell(i, j, co);
-//				}
-//			}
 
 		}
 		
