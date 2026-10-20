@@ -19,4 +19,8 @@ public class Score implements Serializable {
 
 	public void setScore(int score) 	{ this.score = score; }
 	public void setName(String name)	{ this.name = name; }	
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git

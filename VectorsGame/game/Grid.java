@@ -18,12 +18,16 @@ public class Grid {
 		return worldGrid[col][row];
 	}
 	
-	public boolean setCell(int row, int col, ControlState state) {
+	public boolean setCell(int row, int col, ControlState owner) {
 		if (row < worldGrid.length && col < worldGrid[0].length && worldGrid[col][row] == null) {
-			worldGrid[col][row] = state;
+			worldGrid[col][row] = owner;
 			return true;
 		}
+<<<<<<< HEAD
 		return false;		
+=======
+		return false;
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 	}
 	
 	public void printGrid()

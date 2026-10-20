@@ -5,12 +5,20 @@ import java.util.Random;
 import game.Grid.ControlState;
 
 public class ComputerPlayerUnit {
+<<<<<<< HEAD
 	enum CPUState {
 		RANDOM,
 		EASY,
 		MEDIUM,
 		AGGRESSIVE,
 		HARD
+=======
+	enum controlState {
+		RANDOM,
+//		Easy,
+		DEFENSIVE,
+		HARD;
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 	}
 	
 	public CPUState difficulty;

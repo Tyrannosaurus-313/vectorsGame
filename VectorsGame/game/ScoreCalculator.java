@@ -9,10 +9,6 @@ public class ScoreCalculator {
 	//Strategy
 	// Search for the largest chain of control states to smallest, compiling the total point counts
 	
-//	public WinState
-//	{
-//		
-//	}
 	public int getPlayerScore() { return playerScore; }
 	public int getComputerScore() { return computerScore; }
 	
@@ -32,8 +28,13 @@ public class ScoreCalculator {
 					continue;
 				}
 				
+<<<<<<< HEAD
 				ControlState currState = gameGrid.getState(i, j);
 				if (currState != null)
+=======
+				ControlState owner = gameGrid.getState(j, i);
+				if (owner != null)
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 				{
 					int xCount = 1;
 					for (int sRow = 1; sRow <= 5; sRow++)
@@ -43,7 +44,11 @@ public class ScoreCalculator {
 						{
 							break;
 						}
+<<<<<<< HEAD
 						if (currState != gameGrid.getState(i, j + sRow) || checkedCells[i][j + sRow])
+=======
+						if (owner != gameGrid.getState(j, i + sRow) || checkedCells[j][i + sRow])
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 						{
 							break;
 						}			
@@ -60,7 +65,11 @@ public class ScoreCalculator {
 						{
 							break;
 						}
+<<<<<<< HEAD
 						if (currState != gameGrid.getState(i + sCol, j) || checkedCells[i + sCol][j])
+=======
+						if (owner != gameGrid.getState(j + sCol, i) || checkedCells[j + sCol][i])
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 						{
 							break;
 						}
@@ -75,7 +84,7 @@ public class ScoreCalculator {
 						{
 							checkedCells[i][j + c] = true;
 						}
-						computeScore(currState, xCount);
+						computeScore(owner, xCount);
 					}
 					else
 					{
@@ -83,7 +92,7 @@ public class ScoreCalculator {
 						{
 							checkedCells[i + c][j] = true;
 						}
-						computeScore(currState, yCount);
+						computeScore(owner, yCount);
 					}
 				}
 			}
@@ -113,7 +122,11 @@ public class ScoreCalculator {
 		else if (player == ControlState.COMPUTER)
 		{
 			computerScore += points;
+<<<<<<< HEAD
 		}		
+=======
+		}	
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 	}
 		
 	public String getWhoIsWinner()
@@ -131,5 +144,4 @@ public class ScoreCalculator {
 			return "Its a tie!";
 		}
 	}
-
 }

@@ -7,15 +7,18 @@ import game.Grid.ControlState;
 
 public class Vectors {
 	private Highscore scores = new Highscore();
-	private int numRounds = 20;
 	private Grid gameGrid = new Grid();
+<<<<<<< HEAD
 	private CPUState chosenDiff = CPUState.RANDOM;
+=======
+	private int numRounds = 20;
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 	
 	public void setNumTurns(int numRounds) {
 		if (numRounds > 0 && numRounds < 64) //Max rounds for a 64 cell board must be 64
 			this.numRounds = numRounds;
 		else
-			numRounds = 20;
+			this.numRounds = 20;
 	}
 	
 	public void run() {		
@@ -43,8 +46,13 @@ public class Vectors {
 			round(i, cpu, scoreCalc, scnr);
 		}
 		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
+<<<<<<< HEAD
 		printRound(numRounds, scoreCalc);
 
+=======
+		gameGrid.printGrid();
+		scnr.close();
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 	}
 	
 	public int prevPScore = 0;
@@ -64,8 +72,13 @@ public class Vectors {
 			turnOver = gameGrid.setCell(x, y, ControlState.PLAYER);
 		}
 		
+<<<<<<< HEAD
 		Coordinate cpuCoord = cpu.getTurn();
 		gameGrid.setCell(cpuCoord.x, cpuCoord.y, ControlState.COMPUTER);
+=======
+		int[] cpuTurnCoords = cpu.getTurn();
+		gameGrid.setCell(cpuTurnCoords[0], cpuTurnCoords[1], ControlState.COMPUTER);
+>>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
 		scoreCalc.updateScores(gameGrid);
 	}
 	
