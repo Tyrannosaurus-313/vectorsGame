@@ -21,18 +21,10 @@ public class ComputerPlayerUnit {
 		
 	Coordinate pastCoord;
 	public Coordinate getTurn() {
-		if (difficulty == CPUState.AGGRESSIVE) {
-			return calculateSmartMove(10.0, 0.45);
-		}
-		else if (difficulty == CPUState.HARD) {
-			return calculateSmartMove(3.0, 0.45);
-		}
-		else if (difficulty == CPUState.MEDIUM) {
-			return calculateSmartMove(0.4, 0.49);
-		}
-		else if (difficulty == CPUState.EASY) {
-			return getEasyMove();
-		}
+		if (difficulty == CPUState.AGGRESSIVE)	{ return calculateSmartMove(10.0, 0.45); }
+		else if (difficulty == CPUState.HARD)	{ return calculateSmartMove(3.0, 0.45); }
+		else if (difficulty == CPUState.MEDIUM) { return calculateSmartMove(0.4, 0.49); }
+		else if (difficulty == CPUState.EASY)	{ return getEasyMove(); }
 		return getRandomMove();
 	}
 
@@ -46,7 +38,7 @@ public class ComputerPlayerUnit {
 
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                if (gridRef.getState(x, y) != null) {
+                if (!gridRef.isCellValid(x,  y,  ControlState.COMPUTER)) {//gridRef.getState(x, y) != null && !(gridRef.canOverride)) {
                     scores[y][x] = -999;
                     continue;
                 }
@@ -56,10 +48,10 @@ public class ComputerPlayerUnit {
                 int computerGain = cloneCalc.getComputerScore() - origComputerScore;
                 cloneGrid.resetCell(x, y);
 
-                int scoreBeforePlayer = cloneCalc.getPlayerScore();
+                int playerPrevScore = cloneCalc.getPlayerScore();
                 cloneGrid.setCell(x, y, ControlState.PLAYER);
                 cloneCalc.updateScores(cloneGrid);
-                int playerPotentialGain = cloneCalc.getPlayerScore() - scoreBeforePlayer;
+                int playerPotentialGain = cloneCalc.getPlayerScore() - playerPrevScore;
                 double blockingValue = playerPotentialGain * blockingWeight;
 
                 int expansionBonus = getExpansionBonus(x, y);
@@ -86,11 +78,11 @@ public class ComputerPlayerUnit {
 
         for (int i = 0; i < 4; i++) {
             Coordinate hCoord = new Coordinate(pastCoord.x + dx[i], pastCoord.y);
-            if (isWithinBounds(hCoord) && gridRef.getState(hCoord.x, hCoord.y) == null) {
+            if (isWithinBounds(hCoord) && gridRef.getState(hCoord.x, hCoord.y) == ControlState.NULL) {
                 return updatePastCoord(hCoord);
             }
             Coordinate vCoord = new Coordinate(pastCoord.x, pastCoord.y + dy[i]);
-            if (isWithinBounds(vCoord) && gridRef.getState(vCoord.x, vCoord.y) == null) {
+            if (isWithinBounds(vCoord) && gridRef.getState(vCoord.x, vCoord.y) == ControlState.NULL) {
                 return updatePastCoord(vCoord);
             }
         }
@@ -101,7 +93,7 @@ public class ComputerPlayerUnit {
         Coordinate coord;
         do {
             coord = new Coordinate(randy.nextInt(8), randy.nextInt(8));
-        } while (gridRef.getState(coord.x, coord.y) != null);
+        } while (gridRef.getState(coord.x, coord.y) != ControlState.NULL);
         
         pastCoord = coord;
         return coord;
@@ -125,7 +117,7 @@ public class ComputerPlayerUnit {
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == null) {
+            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == ControlState.NULL) {
                 bonus++;
             }
         }
@@ -149,7 +141,6 @@ public class ComputerPlayerUnit {
     private boolean isWithinBounds(Coordinate c) {
         return isWithinBounds(c.x, c.y);
     }
-
     private boolean isWithinBounds(int x, int y) {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }

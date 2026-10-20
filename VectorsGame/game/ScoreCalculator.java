@@ -9,19 +9,17 @@ public class ScoreCalculator {
 	public int getPlayerScore() 	{ return playerScore; }
 	public int getComputerScore()	{ return computerScore; }
 	
-	public void updateScores(Grid gameGrid)
-	{
+	public void updateScores(Grid gameGrid) {
 		int cols = gameGrid.lengths.colCount;
 		int rows = gameGrid.lengths.rowCount;
 		playerScore = 0;
 		computerScore = 0;
 		boolean[][] used  = new boolean[cols][rows];
 
-		
-        for (int len = 5; len >= 3; len--) {
+		//Search from chain length 5 to 3
+        for (int len = 5; len >= 3; len--) {            
             
-            // Horizontal
-            for (int r = 0; r < rows; r++) {
+        	for (int r = 0; r < rows; r++) { // Horizontal
                 for (int c = 0; c <= cols - len; c++) {
                     if (isLineValid(gameGrid, r, c, len, true, used)) {
                         markUsed(used, r, c, len, true);
@@ -29,9 +27,8 @@ public class ScoreCalculator {
                     }
                 }
             }
-
-            // Vertical
-            for (int r = 0; r <= rows - len; r++) {
+        	
+            for (int r = 0; r <= rows - len; r++) { // Vertical
                 for (int c = 0; c < cols; c++) {
                     if (isLineValid(gameGrid, r, c, len, false, used)) {
                         markUsed(used, r, c, len, false);
@@ -46,25 +43,33 @@ public class ScoreCalculator {
         ControlState firstState = grid.getState(r, c);
         
         // A line cannot be formed if the starting cell is empty/null
-        if (firstState == null) return false;
+        if (firstState == ControlState.NULL) return false;
 
         for (int i = 0; i < len; i++) {
-            int currR = horizontal ? r : r + i;
-            int currC = horizontal ? c + i : c;
+        	int currR = r;
+        	int currC = c + i;
+        	if (!horizontal)
+        	{
+        		currR = r + i;
+        		currC = c;
+        	}
 
-            // Check if cell is already part of another chain
-            if (used[currR][currC]) return false;
-
-            // Check if the state matches the first cell in the line
-            if (grid.getState(currR, currC) != firstState) return false;
+            
+            if (used[currR][currC]) return false; //Fail if already used
+            if (grid.getState(currR, currC) != firstState) return false; //Fail if not same owner
         }
         return true;
     }
 
     private void markUsed(boolean[][] used, int r, int c, int len, boolean horizontal) {
         for (int i = 0; i < len; i++) {
-            int currR = horizontal ? r : r + i;
-            int currC = horizontal ? c + i : c;
+            int currR = r;
+            int currC = c + i;
+        	if (!horizontal)
+        	{
+        		currR = r + i;
+        		currC = c;
+        	}
             used[currR][currC] = true;
         }
     }

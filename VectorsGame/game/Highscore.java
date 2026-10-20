@@ -7,15 +7,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-
 public class Highscore {
-	private String filename;	
-	public Score score;
+	private String filename = "users.dat";	
+	public Score score = new Score(-1, "No Record");
 	
-	public Highscore()
-	{		
-		filename = "users.dat";	
-		score = new Score(-1, "No Record");
+	public Highscore() {
 		loadFile();
 	}
 	
@@ -49,12 +45,16 @@ public class Highscore {
 	}
 	
 	public void saveScore(Score newScore) {
-		if (newScore.getScore() > score.getScore()) {
+		if (newScore.getScore() > score.getScore())
 			score = newScore;			
-		}
 	}
 	
 	public void show() {
-		System.out.printf("- High Score: %s – %5d\t     *\n", score.getName(), score.getScore());
-	}	
+		System.out.printf("- High Score: %s – %-5d\t     *\n", score.getName(), score.getScore());
+	}
+	
+	public void forceReset() {
+		this.score = new Score();
+		this.saveFile();
+	}
 }

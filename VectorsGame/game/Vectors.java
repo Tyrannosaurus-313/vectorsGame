@@ -8,31 +8,33 @@ public class Vectors {
 	private Highscore scores = new Highscore();
 	private int numRounds = 20;
 	private Grid gameGrid = new Grid();
-	private CPUState chosenDiff = CPUState.RANDOM;
 	
-	public void setNumTurns(int numRounds) {
-		if (numRounds > 0 && numRounds < 32) //Max rounds for a 64 cell board must be 32 as 2 cells will be set per round 
+	public void setNumTurns(int numRounds) { //rounds > 0 and rounds < cellCount / 2
+		if (numRounds > 0 && numRounds < gameGrid.lengths.rowCount * gameGrid.lengths.colCount * 0.5)
 			this.numRounds = numRounds;
 	}
 	
-	public void run() {		
+	public void run() {
+//		scores.forceReset();
 		Scanner scnr = new Scanner(System.in);
-		System.out.printf("Please enter Num Turns (0 to skip): ");
+		System.out.printf("Please enter Num Turns (1-32): ");
 		setNumTurns(scnr.nextInt());
-		System.out.printf("Please enter Difficulty, (0 = Random, 1 = Easy, 2 = Medium, 3 = Hard, 4 = Aggressive): ");
-		int select = scnr.nextInt();		
-		System.out.printf("Do you want the Columns to use Letters? (y or n) ");
-		String in = scnr.next().toLowerCase().trim();
-		if (in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true"))
-			gameGrid.abcCol = true;
+		System.out.printf("Please enter Difficulty, (0 = Random, 1 = Aggressive, 2 = Easy, 3 = Medium, 4 = Hard): ");
+		int select = scnr.nextInt();
+		System.out.printf("Do you want the Columns to use Letters? (y or n): ");
+		String in = scnr.next().trim();
+		gameGrid.abcCol = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		System.out.printf("Do you want to be able to overwrite owned cells? (y or n): ");
+		in = scnr.next().trim();
+		gameGrid.canOverride = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
 
-		scnr.nextLine(); //Clear Scanner For Round Input
+		scnr.nextLine(); //use nextLine for Round Input
 
-		if (select == 0)	  chosenDiff = CPUState.RANDOM;
-		else if (select == 1) chosenDiff = CPUState.EASY;
-		else if (select == 2) chosenDiff = CPUState.MEDIUM;
-		else if (select == 3) chosenDiff = CPUState.HARD;
-		else if (select == 4) chosenDiff = CPUState.AGGRESSIVE;
+		CPUState chosenDiff = CPUState.RANDOM;
+		if (select == 1) 	  chosenDiff = CPUState.AGGRESSIVE;
+		else if (select == 2) chosenDiff = CPUState.EASY;
+		else if (select == 3) chosenDiff = CPUState.MEDIUM;
+		else if (select == 4) chosenDiff = CPUState.HARD;
 
 		ComputerPlayerUnit cpu = new ComputerPlayerUnit(chosenDiff, gameGrid);
 		ScoreCalculator scoreCalc = new ScoreCalculator();
@@ -40,13 +42,12 @@ public class Vectors {
 		for (int i = 0; i < numRounds; i++) {
 			round(i, cpu, scoreCalc, scnr);
 		}
-		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
 		printRound(numRounds, scoreCalc);
+		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
 
-		if (scoreCalc.getPlayerScore() > scores.score.getScore())
-		{
+		if (scoreCalc.getPlayerScore() > scores.score.getScore()) {
 			System.out.printf("\n\nNew Record!\nPlease Enter Your Name: ");
-			scores.saveScore(new Score(scoreCalc.getPlayerScore(), scnr.next()));
+			scores.saveScore(new Score(scoreCalc.getPlayerScore(), scnr.nextLine()));
 			scores.saveFile();
 		}
 		scnr.close();
@@ -54,15 +55,13 @@ public class Vectors {
 	
 	public int prevPScore = 0;
 	public int prevCScore = 0;
-	public void round(int roundNum, ComputerPlayerUnit cpu, ScoreCalculator scoreCalc, Scanner scnr)
-	{
+	public void round(int roundNum, ComputerPlayerUnit cpu, ScoreCalculator scoreCalc, Scanner scnr) {
 		printRound(roundNum, scoreCalc);
 		prevPScore = scoreCalc.getPlayerScore();
 		prevCScore = scoreCalc.getComputerScore();
 
 		boolean turnOver = false;
-		while (!turnOver)
-		{
+		while (!turnOver) {
 			System.out.printf("Player(X) Turn (Row Col): ");
 			String input = scnr.nextLine().trim();
 
@@ -89,31 +88,32 @@ public class Vectors {
 		System.out.printf("- Turn %2d  of %2d\t\t     *\n%s", roundNum, numRounds, bar);
 		gameGrid.printGrid();
 	}
+	
+	
+	//	Input Parsing
 
 	private static Coordinate parseMove(String input) {
 		input = input.trim().toUpperCase();
 
 		if (input.matches("[A-Z0-9]{2}")) { //Sees if input is A-Z or single digit char in a 2 long string
 			return new Coordinate(
-				parseCoordinate(input.charAt(0) + ""),
-				parseCoordinate(input.charAt(1) + "")
+				parseCoord(input.charAt(1) + ""),
+				parseCoord(input.charAt(0) + "")
 			);
 		}
 
-		String[] parts = input.split("[,.\\s]+"); //'\\s' and ',' handles potential whitespace 
+		String[] parts = input.split("[,.\\s]+"); //'\\s' and ',.' handles potential whitespace 
 
 		if (parts.length != 2) {
 			System.out.println("Invalid coordinate");
 			return new Coordinate(-1, -1); //Returns invalid coord
 		}
 
-		return new Coordinate(
-			parseCoordinate(parts[0]),
-			parseCoordinate(parts[1])
+		return new Coordinate(parseCoord(parts[1]), parseCoord(parts[0])
 		);
 	}
 
-	private static int parseCoordinate(String input) {
+	private static int parseCoord(String input) {
 		input = input.trim().toUpperCase();
 
 		if (input.length() == 1 && Character.isLetter(input.charAt(0))) {
