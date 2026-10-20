@@ -6,142 +6,85 @@ public class ScoreCalculator {
 	
 	private int playerScore;
 	private int computerScore;
-	//Strategy
-	// Search for the largest chain of control states to smallest, compiling the total point counts
-	
-	public int getPlayerScore() { return playerScore; }
-	public int getComputerScore() { return computerScore; }
+	public int getPlayerScore() 	{ return playerScore; }
+	public int getComputerScore()	{ return computerScore; }
 	
 	public void updateScores(Grid gameGrid)
 	{
-		int colCount = gameGrid.lengths.colCount;
-		int rowCount = gameGrid.lengths.rowCount;
+		int cols = gameGrid.lengths.colCount;
+		int rows = gameGrid.lengths.rowCount;
 		playerScore = 0;
 		computerScore = 0;
-		boolean[][] checkedCells  = new boolean[colCount][rowCount];
-		for (int i = 0; i < colCount; i++)
-		{
-			for (int j = 0; j < rowCount; j++)
-			{
-				if (checkedCells[i][j])
-				{
-					continue;
-				}
-				
-<<<<<<< HEAD
-				ControlState currState = gameGrid.getState(i, j);
-				if (currState != null)
-=======
-				ControlState owner = gameGrid.getState(j, i);
-				if (owner != null)
->>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
-				{
-					int xCount = 1;
-					for (int sRow = 1; sRow <= 5; sRow++)
-					{			
-//						System.out.println(j + " " + sRow + " " + rowCount);
-						if (j + sRow >= colCount)
-						{
-							break;
-						}
-<<<<<<< HEAD
-						if (currState != gameGrid.getState(i, j + sRow) || checkedCells[i][j + sRow])
-=======
-						if (owner != gameGrid.getState(j, i + sRow) || checkedCells[j][i + sRow])
->>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
-						{
-							break;
-						}			
-						else
-						{
-							xCount++;
-						}
-					}
-					int yCount = 1;
-					for (int sCol = 1; sCol <= 5; sCol++)
-					{
-//						System.out.println(i + sCol + " " + colCount);
-						if (i + sCol >= rowCount)
-						{
-							break;
-						}
-<<<<<<< HEAD
-						if (currState != gameGrid.getState(i + sCol, j) || checkedCells[i + sCol][j])
-=======
-						if (owner != gameGrid.getState(j + sCol, i) || checkedCells[j + sCol][i])
->>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
-						{
-							break;
-						}
-						else
-						{
-							yCount++;
-						}
-					}
-					if (xCount >= yCount)
-					{
-						for (int c = 0; c < xCount; c++)
-						{
-							checkedCells[i][j + c] = true;
-						}
-						computeScore(owner, xCount);
-					}
-					else
-					{
-						for (int c = 0; c < yCount; c++)
-						{
-							checkedCells[i + c][j] = true;
-						}
-						computeScore(owner, yCount);
-					}
-				}
-			}
-		}
+		boolean[][] used  = new boolean[cols][rows];
+
+		
+        for (int len = 5; len >= 3; len--) {
+            
+            // Horizontal
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c <= cols - len; c++) {
+                    if (isLineValid(gameGrid, r, c, len, true, used)) {
+                        markUsed(used, r, c, len, true);
+                        computeScore(gameGrid.getState(r, c), len);
+                    }
+                }
+            }
+
+            // Vertical
+            for (int r = 0; r <= rows - len; r++) {
+                for (int c = 0; c < cols; c++) {
+                    if (isLineValid(gameGrid, r, c, len, false, used)) {
+                        markUsed(used, r, c, len, false);
+                        computeScore(gameGrid.getState(r, c), len);
+                    }
+                }
+            }
+        }
 	}
 	
-	private void computeScore(ControlState player, int count)
-	{
-		int points = 0;
-		if (count == 3)
-		{
-			points = 4;				
-		}
-		else if (count == 4)
-		{
-			points = 6;				
-		}
-		else if (count == 5)
-		{
-			points = 10;				
-		}
+    private boolean isLineValid(Grid grid, int r, int c, int len, boolean horizontal, boolean[][] used) {
+        ControlState firstState = grid.getState(r, c);
+        
+        // A line cannot be formed if the starting cell is empty/null
+        if (firstState == null) return false;
 
-		if (player == ControlState.PLAYER)
-		{
-			playerScore += points;
-		}
-		else if (player == ControlState.COMPUTER)
-		{
-			computerScore += points;
-<<<<<<< HEAD
-		}		
-=======
-		}	
->>>>>>> branch 'main' of git@github.com:Tyrannosaurus-313/vectorsGame.git
+        for (int i = 0; i < len; i++) {
+            int currR = horizontal ? r : r + i;
+            int currC = horizontal ? c + i : c;
+
+            // Check if cell is already part of another chain
+            if (used[currR][currC]) return false;
+
+            // Check if the state matches the first cell in the line
+            if (grid.getState(currR, currC) != firstState) return false;
+        }
+        return true;
+    }
+
+    private void markUsed(boolean[][] used, int r, int c, int len, boolean horizontal) {
+        for (int i = 0; i < len; i++) {
+            int currR = horizontal ? r : r + i;
+            int currC = horizontal ? c + i : c;
+            used[currR][currC] = true;
+        }
+    }
+
+	private void computeScore(ControlState player, int count) {
+        int points = 0;
+        if (count == 3) points = 4;
+        else if (count == 4) points = 6;
+        else if (count == 5) points = 10;
+
+        if (player == ControlState.PLAYER) {
+            playerScore += points;
+        } else if (player == ControlState.COMPUTER) {
+            computerScore += points;
+        }
 	}
 		
-	public String getWhoIsWinner()
-	{
-		if (playerScore > computerScore)
-		{
-			return "The Player Wins!";
-		}
-		else if (computerScore > playerScore)
-		{
-			return "The Computer Wins!";
-		}
-		else 
-		{
-			return "Its a tie!";
-		}
+	public String getWhoIsWinner() {
+		if (playerScore > computerScore) 	  return "The Player Wins!";
+		else if (computerScore > playerScore) return "The Computer Wins!";
+		return "Its a tie!";
 	}
 }

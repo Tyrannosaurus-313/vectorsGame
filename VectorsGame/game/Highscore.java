@@ -9,8 +9,7 @@ import java.io.ObjectOutputStream;
 
 
 public class Highscore {
-	private String filename;
-	
+	private String filename;	
 	public Score score;
 	
 	public Highscore()

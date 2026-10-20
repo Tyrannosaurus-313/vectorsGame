@@ -1,8 +1,7 @@
 package game;
 
 public class GridSize {
-	int rowCount;
-	int colCount;
+	int rowCount, colCount;
 
 	public GridSize(int xLength, int yLength) {
 		this.rowCount = xLength;
