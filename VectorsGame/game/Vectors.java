@@ -2,6 +2,8 @@ package game;
 
 import game.ComputerPlayerUnit.CPUState;
 import game.Grid.ControlState;
+import game.Grid.Style;
+
 import java.util.Scanner;
 
 public class Vectors {
@@ -21,20 +23,30 @@ public class Vectors {
 		setNumTurns(scnr.nextInt());
 		System.out.printf("Please enter Difficulty, (0 = Random, 1 = Aggressive, 2 = Easy, 3 = Medium, 4 = Hard): ");
 		int select = scnr.nextInt();
-		System.out.printf("Do you want the Columns to use Letters? (y or n): ");
-		String in = scnr.next().trim();
-		gameGrid.abcCol = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
-		System.out.printf("Do you want to be able to overwrite owned cells? (y or n): ");
-		in = scnr.next().trim();
-		gameGrid.canOverride = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
-
-		scnr.nextLine(); //use nextLine for Round Input
-
 		CPUState chosenDiff = CPUState.RANDOM;
 		if (select == 1) 	  chosenDiff = CPUState.AGGRESSIVE;
 		else if (select == 2) chosenDiff = CPUState.EASY;
 		else if (select == 3) chosenDiff = CPUState.MEDIUM;
 		else if (select == 4) chosenDiff = CPUState.HARD;
+
+		System.out.printf("Rows use Letters? (y or n): ");
+		String in = scnr.next().trim();
+		gameGrid.abcRow = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		System.out.printf("Columns use Letters? (y or n): ");
+		in = scnr.next().trim();
+		gameGrid.abcCol = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		System.out.printf("Do you want to be able to overwrite owned cells? (y or n): ");
+		in = scnr.next().trim();
+		gameGrid.canOverride = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+
+		System.out.printf("Style (0 = Default, 1 = Clean, 2 = Bold): ");
+		select = scnr.nextInt();
+		if (select == 1) gameGrid.setStyle(Style.Clean);
+		else if (select == 2) gameGrid.setStyle(Style.Bold);
+		else gameGrid.setStyle(Style.Default);
+
+		scnr.nextLine(); //use nextLine for Round Input
+
 
 		ComputerPlayerUnit cpu = new ComputerPlayerUnit(chosenDiff, gameGrid);
 		ScoreCalculator scoreCalc = new ScoreCalculator();

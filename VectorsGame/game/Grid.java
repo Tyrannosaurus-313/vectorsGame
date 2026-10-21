@@ -9,8 +9,9 @@ public class Grid {
 		}
 	}
 	
-	private ControlState[][] worldGrid = new ControlState[8][8];
+	private ControlState[][] worldGrid  = new ControlState[8][8];
 	public boolean abcCol = false;
+	public boolean abcRow = false;
 	public boolean canOverride = false;
 	public final GridSize lengths = new GridSize(worldGrid.length, worldGrid[0].length);
 	
@@ -53,21 +54,58 @@ public class Grid {
 	private boolean inBounds(int row, int col) {
 		return row < worldGrid.length && col < worldGrid[0].length && row >= 0 && col >= 0;
 	}
+
+	enum Style {
+		Default, Clean, Bold;
+	}
+	public void setStyle(Style chosenStyle)
+	{
+		if (chosenStyle == Style.Default)
+		{
+			header = "---------------------------------";
+			bar = "|";
+			barRow = "---------------------------------";
+			foot = "---------------------------------";	
+		}
+		else if (chosenStyle == Style.Clean)
+		{
+			header = "┌───┬───┬───┬───┬───┬───┬───┬───┐";
+			bar = "│";
+			barRow = "├───┼───┼───┼───┼───┼───┼───┼───┤";
+			foot = "└───┴───┴───┴───┴───┴───┴───┴───┘";			
+		}
+		else if (chosenStyle == Style.Bold)
+		{
+			header = "┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓";
+			bar = "┃";
+			barRow = "┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━┫";
+			foot = "┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛";				
+		}
+	}
+	public String header;
+	public String bar;
+	public String barRow;
+	public String foot;
 	
 	public void printGrid()
 	{
 		if (abcCol) { System.out.printf("    A   B   C   D   E   F   G   H  \n"); }
 		else 		{ System.out.printf("    0   1   2   3   4   5   6   7  \n"); }
+		
+		char rowChar = '0';
+		if (abcRow)
+			rowChar = 'A';
 
+		System.out.printf("  %s\n", header);
 		for (int i = 0; i < worldGrid.length; i++) {
-			System.out.printf("  ---------------------------------\n");
-			System.out.printf("%-2d|", i);
+			System.out.printf("%-2c%s", i + rowChar, bar);
 			for (int j = 0; j < worldGrid[i].length; j++) {
-				System.out.printf(" %c |", stateToChar(worldGrid[i][j]));
+				System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), bar);
 			}
-			System.out.printf("\n", i);
+			if (i != worldGrid.length - 1)
+				System.out.printf("\n  %s\n", barRow);
 		}
-		System.out.printf("  ---------------------------------\n");
+		System.out.printf("\n  %s\n", foot);
 	}
 	
 	public char stateToChar(ControlState state) {
