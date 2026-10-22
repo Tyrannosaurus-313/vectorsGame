@@ -1,6 +1,6 @@
 package game;
 
-import game.Grid.ControlState;
+import game.Grid.Owner;
 
 public class ScoreCalculator {
 	
@@ -40,10 +40,10 @@ public class ScoreCalculator {
 	}
 	
     private boolean isLineValid(Grid grid, int r, int c, int len, boolean horizontal, boolean[][] used) {
-        ControlState firstState = grid.getState(r, c);
+        Owner firstState = grid.getState(r, c);
         
         // A line cannot be formed if the starting cell is empty/null
-        if (firstState == ControlState.NULL) return false;
+        if (firstState == Owner.UNOWNED) return false;
 
         for (int i = 0; i < len; i++) {
         	int currR = r;
@@ -74,15 +74,15 @@ public class ScoreCalculator {
         }
     }
 
-	private void computeScore(ControlState player, int count) {
+	private void computeScore(Owner player, int count) {
         int points = 0;
         if (count == 3) points = 4;
         else if (count == 4) points = 6;
         else if (count == 5) points = 10;
 
-        if (player == ControlState.PLAYER) {
+        if (player == Owner.PLAYER) {
             playerScore += points;
-        } else if (player == ControlState.COMPUTER) {
+        } else if (player == Owner.COMPUTER) {
             computerScore += points;
         }
 	}

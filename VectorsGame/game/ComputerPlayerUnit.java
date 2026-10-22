@@ -1,11 +1,10 @@
 package game;
 
+import game.Grid.Owner;
 import java.util.Random;
 
-import game.Grid.ControlState;
-
 public class ComputerPlayerUnit {
-	enum CPUState { RANDOM, EASY, MEDIUM, AGGRESSIVE, HARD }
+	public enum CPUState { RANDOM, EASY, MEDIUM, AGGRESSIVE, HARD }
 	
 	public CPUState difficulty;
 	public Random randy = new Random();
@@ -29,27 +28,27 @@ public class ComputerPlayerUnit {
 	}
 
 	private Coordinate calculateSmartMove(double blockingWeight, double expansionWeight) {
-        int[][] scores = new int[8][8];
+        int[][] scores = new int[gridRef.lengths.rowCount][gridRef.lengths.colCount];
         ScoreCalculator cloneCalc = new ScoreCalculator();
         Grid cloneGrid = createGridClone();
         
         cloneCalc.updateScores(cloneGrid);
         int origComputerScore = cloneCalc.getComputerScore();
 
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                if (!gridRef.isCellValid(x,  y,  ControlState.COMPUTER)) {//gridRef.getState(x, y) != null && !(gridRef.canOverride)) {
+        for (int y = 0; y < scores.length; y++) {
+            for (int x = 0; x < scores[0].length; x++) {
+                if (!gridRef.isCellValid(x,  y,  Owner.COMPUTER)) {//gridRef.getState(x, y) != null && !(gridRef.canOverride)) {
                     scores[y][x] = -999;
                     continue;
                 }
 
-                cloneGrid.setCell(x, y, ControlState.COMPUTER);
+                cloneGrid.setCell(x, y, Owner.COMPUTER);
                 cloneCalc.updateScores(cloneGrid);
                 int computerGain = cloneCalc.getComputerScore() - origComputerScore;
                 cloneGrid.resetCell(x, y);
 
                 int playerPrevScore = cloneCalc.getPlayerScore();
-                cloneGrid.setCell(x, y, ControlState.PLAYER);
+                cloneGrid.setCell(x, y, Owner.PLAYER);
                 cloneCalc.updateScores(cloneGrid);
                 int playerPotentialGain = cloneCalc.getPlayerScore() - playerPrevScore;
                 double blockingValue = playerPotentialGain * blockingWeight;
@@ -78,11 +77,11 @@ public class ComputerPlayerUnit {
 
         for (int i = 0; i < 4; i++) {
             Coordinate hCoord = new Coordinate(pastCoord.x + dx[i], pastCoord.y);
-            if (isWithinBounds(hCoord) && gridRef.getState(hCoord.x, hCoord.y) == ControlState.NULL) {
+            if (isWithinBounds(hCoord) && gridRef.getState(hCoord.x, hCoord.y) == Owner.UNOWNED) {
                 return updatePastCoord(hCoord);
             }
             Coordinate vCoord = new Coordinate(pastCoord.x, pastCoord.y + dy[i]);
-            if (isWithinBounds(vCoord) && gridRef.getState(vCoord.x, vCoord.y) == ControlState.NULL) {
+            if (isWithinBounds(vCoord) && gridRef.getState(vCoord.x, vCoord.y) == Owner.UNOWNED) {
                 return updatePastCoord(vCoord);
             }
         }
@@ -92,8 +91,8 @@ public class ComputerPlayerUnit {
     private Coordinate getRandomMove() {
         Coordinate coord;
         do {
-            coord = new Coordinate(randy.nextInt(8), randy.nextInt(8));
-        } while (gridRef.getState(coord.x, coord.y) != ControlState.NULL);
+            coord = new Coordinate(randy.nextInt(gridRef.lengths.rowCount), randy.nextInt(gridRef.lengths.colCount));
+        } while (gridRef.getState(coord.x, coord.y) != Owner.UNOWNED);
         
         pastCoord = coord;
         return coord;
@@ -101,9 +100,9 @@ public class ComputerPlayerUnit {
 
 	
     private Grid createGridClone() {
-        Grid clone = new Grid();
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
+        Grid clone = new Grid(gridRef.lengths.colCount, gridRef.lengths.rowCount);
+        for (int y = 0; y < gridRef.lengths.rowCount; y++) {
+            for (int x = 0; x < gridRef.lengths.colCount; x++) {
                 clone.setCell(x, y, gridRef.getState(x, y));
             }
         }
@@ -117,7 +116,7 @@ public class ComputerPlayerUnit {
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == ControlState.NULL) {
+            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == Owner.UNOWNED) {
                 bonus++;
             }
         }
@@ -127,8 +126,8 @@ public class ComputerPlayerUnit {
     private Coordinate findBestCoordinate(int[][] scores) {
         int currMax = -999;
         Coordinate bestCoord = null;
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
+        for (int y = 0; y < gridRef.lengths.rowCount; y++) {
+            for (int x = 0; x < gridRef.lengths.colCount; x++) {
                 if (scores[y][x] > currMax) {
                     currMax = scores[y][x];
                     bestCoord = new Coordinate(x, y);

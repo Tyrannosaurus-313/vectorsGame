@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Highscore {
-	private String filename = "users.dat";	
+	private final String filename = "users.dat";	
 	public Score score = new Score(-1, "No Record");
 	
 	public Highscore() {
@@ -47,10 +47,6 @@ public class Highscore {
 	public void saveScore(Score newScore) {
 		if (newScore.getScore() > score.getScore())
 			score = newScore;			
-	}
-	
-	public void show() {
-		System.out.printf("- High Score: %s – %-5d\t     *\n", score.getName(), score.getScore());
 	}
 	
 	public void forceReset() {

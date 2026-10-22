@@ -1,117 +1,143 @@
 package game;
 
 public class Grid {
-	enum ControlState {
-		NULL, PLAYER, COMPUTER; //Null is Uncontrolled/Empty
+	enum Owner {
+		UNOWNED, PLAYER, COMPUTER; //Null is Uncontrolled/Empty
 
 		public char toChar() {
 			return name().charAt(0); //name() gets the name of the enum
 		}
 	}
 	
-	private ControlState[][] worldGrid  = new ControlState[8][8];
+	private Owner[][] worldGrid  = new Owner[8][8];//[8][8];
+
 	public boolean abcCol = false;
 	public boolean abcRow = false;
 	public boolean canOverride = false;
-	public final GridSize lengths = new GridSize(worldGrid.length, worldGrid[0].length);
+	public GridSize lengths = new GridSize(worldGrid.length, worldGrid[0].length);
 	
-	public Grid() {
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                worldGrid[x][y] = ControlState.NULL;
+	public Grid(int colCount, int rowCount) {
+		if (colCount > 32)
+			colCount = 32;
+		if (rowCount > 32)
+			rowCount = 32;
+		worldGrid = new Owner[colCount][rowCount];
+		lengths = new GridSize(worldGrid.length, worldGrid[0].length);
+        for (int y = 0; y < worldGrid.length; y++) {
+            for (int x = 0; x < worldGrid[0].length; x++) {
+                this.worldGrid[y][x] = Owner.UNOWNED;
             }
         }
 	}
 	
-	public ControlState getState(int row, int col) {
+	public Owner getState(int row, int col) {
 		return worldGrid[col][row];
 	}
 	
 	public void resetCell(int row, int col) {
 		if (row < worldGrid.length && col < worldGrid[0].length)
-			worldGrid[col][row] = ControlState.NULL;	
+			this.worldGrid[col][row] = Owner.UNOWNED;	
 	}
 	
-	public boolean isCellValid(int row, int col, ControlState state) 	{
-		return (canOverride || worldGrid[col][row] == ControlState.NULL) && inBounds(row, col) && worldGrid[col][row] != state;
+	public boolean isCellValid(int row, int col, Owner state) 	{
+		return inBounds(row, col) && worldGrid[col][row] != state
+				&& (canOverride || worldGrid[col][row] == Owner.UNOWNED); //Either override allows must be on, or the cell must be unowned
 	}
 	
-	public boolean setCell(int row, int col, ControlState state) {
-		if (isCellValid(row, col, state)) {
-			if (worldGrid[col][row] != ControlState.NULL) {
+	public boolean setCell(int row, int col, Owner state) {
+		if (isCellValid(row, col, state)) { //IF its valid
+			if (worldGrid[col][row] != Owner.UNOWNED) {
 				System.out.println("Trying to set " + col + " " + row + " to " + null);
-				worldGrid[row][col] = null;
-				worldGrid[row][col] = ControlState.NULL;
+				this.worldGrid[col][row] = null;
+				this.worldGrid[col][row] = Owner.UNOWNED;
 			}
 			else {
-				worldGrid[col][row] = state;
+				this.worldGrid[col][row] = state;
 			}
 			return true;
 		}
 		return false;		
 	}
 	
-	private boolean inBounds(int row, int col) {
-		return row < worldGrid.length && col < worldGrid[0].length && row >= 0 && col >= 0;
+	private boolean inBounds(int x, int y) {
+		return x < worldGrid[0].length && y < worldGrid.length && x >= 0 && y >= 0;
 	}
-
-	enum Style {
-		Default, Clean, Bold;
-	}
-	public void setStyle(Style chosenStyle)
-	{
-		if (chosenStyle == Style.Default)
-		{
-			header = "---------------------------------";
-			bar = "|";
-			barRow = "---------------------------------";
-			foot = "---------------------------------";	
-		}
-		else if (chosenStyle == Style.Clean)
-		{
-			header = "┌───┬───┬───┬───┬───┬───┬───┬───┐";
-			bar = "│";
-			barRow = "├───┼───┼───┼───┼───┼───┼───┼───┤";
-			foot = "└───┴───┴───┴───┴───┴───┴───┴───┘";			
-		}
-		else if (chosenStyle == Style.Bold)
-		{
-			header = "┏━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┳━━━┓";
-			bar = "┃";
-			barRow = "┣━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━╋━━━┫";
-			foot = "┗━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┻━━━┛";				
-		}
-	}
-	public String header;
-	public String bar;
-	public String barRow;
-	public String foot;
 	
-	public void printGrid()
-	{
-		if (abcCol) { System.out.printf("    A   B   C   D   E   F   G   H  \n"); }
-		else 		{ System.out.printf("    0   1   2   3   4   5   6   7  \n"); }
-		
-		char rowChar = '0';
-		if (abcRow)
-			rowChar = 'A';
-
-		System.out.printf("  %s\n", header);
-		for (int i = 0; i < worldGrid.length; i++) {
-			System.out.printf("%-2c%s", i + rowChar, bar);
-			for (int j = 0; j < worldGrid[i].length; j++) {
-				System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), bar);
+	public void printGrid() {
+		System.out.printf("    ");		
+		int i = 0;
+		if (abcCol) {
+			for (; i < worldGrid[0].length; i++) {
+				System.out.printf("%c   ", (char)('A' + i));
 			}
-			if (i != worldGrid.length - 1)
-				System.out.printf("\n  %s\n", barRow);
+		}
+		else
+		{
+			for (; i < worldGrid[0].length; i++) {
+				System.out.printf("%2d  ", i);
+			}			
+		}
+		
+		String header = Styles.topLeft + "";
+		for (i = 0; i < worldGrid[0].length; i++)
+		{
+			header += Styles.spacer;
+			if (i == worldGrid[0].length - 1)
+				header += Styles.topRight;
+			else
+				header += Styles.topMid;
+		}
+
+		String bar = Styles.midLeft + "";		
+		for (i = 0; i < worldGrid[0].length; i++)
+		{
+			bar += Styles.spacer;
+			if (i == worldGrid[0].length - 1)
+				bar += Styles.midRight;
+			else
+				bar += Styles.midMid;
+		}
+
+		String foot = Styles.bottomLeft + "";
+		for (i = 0; i < worldGrid[0].length; i++)
+		{
+			foot += Styles.spacer;
+			if (i == worldGrid[0].length - 1)
+				foot += Styles.bottomRight;
+			else
+				foot += Styles.bottomMid;
+		}
+
+		System.out.printf("\n  %s\n", header);
+		if (abcRow)
+		{
+				char rowChar = 'A';
+				for (i = 0; i < worldGrid.length; i++) {
+				System.out.printf("%-2c%s", (char)(i + rowChar), Styles.gridBar);
+				for (int j = 0; j < worldGrid[i].length; j++) {
+					System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), Styles.gridBar);
+				}
+				if (i != worldGrid.length - 1)
+					System.out.printf("\n  %s\n", bar);
+			}
+		}
+		else
+		{
+			for (i = 0; i < worldGrid.length; i++) {
+				System.out.printf("%-2d%s", i, Styles.gridBar);
+				for (int j = 0; j < worldGrid[i].length; j++) {
+					System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), Styles.gridBar);
+				}
+				if (i != worldGrid.length - 1)
+					System.out.printf("\n  %s\n", bar);
+			}
 		}
 		System.out.printf("\n  %s\n", foot);
 	}
 	
-	public char stateToChar(ControlState state) {
-		if (state == ControlState.NULL) { return ' '; }
-		else if (state == ControlState.PLAYER) { return 'X'; }
+	public char stateToChar(Owner state) {
+		if (state == Owner.UNOWNED) { return ' '; }
+		else if (state == Owner.PLAYER) { return 'X'; }
 		else { return 'C'; }
-//		return state.toChar();
 	}
 }
