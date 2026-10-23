@@ -7,6 +7,12 @@ public class Grid {
 		public char toChar() {
 			return name().charAt(0); //name() gets the name of the enum
 		}
+		
+		public char stateToChar() {
+			if (this == Owner.UNOWNED) { return ' '; }
+			else if (this == Owner.PLAYER) { return 'X'; }
+			else { return 'C'; }
+		}
 	}
 	
 	private Owner[][] worldGrid  = new Owner[8][8];//[8][8];
@@ -17,10 +23,9 @@ public class Grid {
 	public GridSize lengths = new GridSize(worldGrid.length, worldGrid[0].length);
 	
 	public Grid(int colCount, int rowCount) {
-		if (colCount > 32)
-			colCount = 32;
-		if (rowCount > 32)
-			rowCount = 32;
+		if (colCount > 26 || colCount < 1) colCount = 8;
+		if (rowCount > 26 || rowCount < 1) rowCount = 8;
+		
 		worldGrid = new Owner[colCount][rowCount];
 		lengths = new GridSize(worldGrid.length, worldGrid[0].length);
         for (int y = 0; y < worldGrid.length; y++) {
@@ -45,18 +50,16 @@ public class Grid {
 	}
 	
 	public boolean setCell(int row, int col, Owner state) {
-		if (isCellValid(row, col, state)) { //IF its valid
-			if (worldGrid[col][row] != Owner.UNOWNED) {
-				System.out.println("Trying to set " + col + " " + row + " to " + null);
-				this.worldGrid[col][row] = null;
-				this.worldGrid[col][row] = Owner.UNOWNED;
-			}
-			else {
-				this.worldGrid[col][row] = state;
-			}
-			return true;
+		if (!isCellValid(row, col, state))
+			return false;	
+		
+		if (worldGrid[col][row] != Owner.UNOWNED) {
+			this.worldGrid[col][row] = Owner.UNOWNED;
 		}
-		return false;		
+		else {
+			this.worldGrid[col][row] = state;
+		}
+		return true;	
 	}
 	
 	private boolean inBounds(int x, int y) {
@@ -64,80 +67,47 @@ public class Grid {
 	}
 	
 	public void printGrid() {
-		System.out.printf("    ");		
+		System.out.printf("   ");		
 		int i = 0;
-		if (abcCol) {
-			for (; i < worldGrid[0].length; i++) {
+		for (; i < worldGrid[0].length; i++) {
+			if (abcCol) {
 				System.out.printf("%c   ", (char)('A' + i));
 			}
-		}
-		else
-		{
-			for (; i < worldGrid[0].length; i++) {
+			else {
 				System.out.printf("%2d  ", i);
-			}			
+			}
 		}
-		
-		String header = Styles.topLeft + "";
-		for (i = 0; i < worldGrid[0].length; i++)
-		{
-			header += Styles.spacer;
-			if (i == worldGrid[0].length - 1)
-				header += Styles.topRight;
-			else
-				header += Styles.topMid;
-		}
-
-		String bar = Styles.midLeft + "";		
-		for (i = 0; i < worldGrid[0].length; i++)
-		{
-			bar += Styles.spacer;
-			if (i == worldGrid[0].length - 1)
-				bar += Styles.midRight;
-			else
-				bar += Styles.midMid;
-		}
-
-		String foot = Styles.bottomLeft + "";
-		for (i = 0; i < worldGrid[0].length; i++)
-		{
-			foot += Styles.spacer;
-			if (i == worldGrid[0].length - 1)
-				foot += Styles.bottomRight;
-			else
-				foot += Styles.bottomMid;
-		}
+			
+		String header = Styles.gridHead;
+		String bar = Styles.gridBar;	
+		String foot = Styles.gridFoot;
 
 		System.out.printf("\n  %s\n", header);
 		if (abcRow)
 		{
-				char rowChar = 'A';
-				for (i = 0; i < worldGrid.length; i++) {
-				System.out.printf("%-2c%s", (char)(i + rowChar), Styles.gridBar);
+			char rowChar = 'A';
+			for (i = 0; i < worldGrid.length; i++) {
+				System.out.printf("%-2c%s", (char)(i + rowChar), Styles.vBar);
 				for (int j = 0; j < worldGrid[i].length; j++) {
-					System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), Styles.gridBar);
+					System.out.printf(" %c %s", worldGrid[i][j].stateToChar(), Styles.vBar);
 				}
-				if (i != worldGrid.length - 1)
+				if (i != worldGrid.length - 1) {
 					System.out.printf("\n  %s\n", bar);
+				}
 			}
 		}
 		else
 		{
 			for (i = 0; i < worldGrid.length; i++) {
-				System.out.printf("%-2d%s", i, Styles.gridBar);
+				System.out.printf("%-2d%s", i, Styles.vBar);
 				for (int j = 0; j < worldGrid[i].length; j++) {
-					System.out.printf(" %c %s", stateToChar(worldGrid[i][j]), Styles.gridBar);
+					System.out.printf(" %c %s", worldGrid[i][j].stateToChar(), Styles.vBar);
 				}
-				if (i != worldGrid.length - 1)
+				if (i != worldGrid.length - 1) {
 					System.out.printf("\n  %s\n", bar);
+				}
 			}
 		}
 		System.out.printf("\n  %s\n", foot);
-	}
-	
-	public char stateToChar(Owner state) {
-		if (state == Owner.UNOWNED) { return ' '; }
-		else if (state == Owner.PLAYER) { return 'X'; }
-		else { return 'C'; }
 	}
 }

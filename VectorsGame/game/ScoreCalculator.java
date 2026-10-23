@@ -14,13 +14,15 @@ public class ScoreCalculator {
 		int rows = gameGrid.lengths.rowCount;
 		playerScore = 0;
 		computerScore = 0;
-		boolean[][] used  = new boolean[cols][rows];
+		boolean[][] used  = new boolean[rows][cols]; //I think rows and cols got swapped, so I am swapping them back
 
 		//Search from chain length 5 to 3
-        for (int len = 5; len >= 3; len--) {            
-            
+        for (int len = 5; len >= 3; len--) { //TODO: Diagonal needs to be handled as well    
+        									 //TODO: OVERLAP Should be allowed, but only when it is not the same direction (i.e. horizontal and vertical could overlap, but not horizontal and horizontal.) 
+            							     // Or more simply put, nesting is not allowed, but overlap is.
         	for (int r = 0; r < rows; r++) { // Horizontal
                 for (int c = 0; c <= cols - len; c++) {
+//                    System.out.println(r + " " + rows + " cols " + c + " " + cols);
                     if (isLineValid(gameGrid, r, c, len, true, used)) {
                         markUsed(used, r, c, len, true);
                         computeScore(gameGrid.getState(r, c), len);
@@ -30,6 +32,7 @@ public class ScoreCalculator {
         	
             for (int r = 0; r <= rows - len; r++) { // Vertical
                 for (int c = 0; c < cols; c++) {
+//                    System.out.println(r + " " + rows + "cols\t" + c + " " + cols);
                     if (isLineValid(gameGrid, r, c, len, false, used)) {
                         markUsed(used, r, c, len, false);
                         computeScore(gameGrid.getState(r, c), len);
@@ -48,13 +51,13 @@ public class ScoreCalculator {
         for (int i = 0; i < len; i++) {
         	int currR = r;
         	int currC = c + i;
-        	if (!horizontal)
-        	{
+        	if (!horizontal) {
         		currR = r + i;
         		currC = c;
         	}
-
-            
+        	
+//			System.out.println(used.length + " " + used[0].length);
+//			System.out.println(currR + " " + currC + " i" + i);
             if (used[currR][currC]) return false; //Fail if already used
             if (grid.getState(currR, currC) != firstState) return false; //Fail if not same owner
         }
@@ -65,8 +68,7 @@ public class ScoreCalculator {
         for (int i = 0; i < len; i++) {
             int currR = r;
             int currC = c + i;
-        	if (!horizontal)
-        	{
+        	if (!horizontal) {
         		currR = r + i;
         		currC = c;
         	}
@@ -86,7 +88,7 @@ public class ScoreCalculator {
             computerScore += points;
         }
 	}
-		
+	
 	public String getWhoIsWinner() {
 		if (playerScore > computerScore) 	  return "The Player Wins!";
 		else if (computerScore > playerScore) return "The Computer Wins!";

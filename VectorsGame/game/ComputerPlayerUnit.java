@@ -4,7 +4,28 @@ import game.Grid.Owner;
 import java.util.Random;
 
 public class ComputerPlayerUnit {
-	public enum CPUState { RANDOM, EASY, MEDIUM, AGGRESSIVE, HARD }
+	public enum CPUState { RANDOM, AGGRESSIVE, EASY, MEDIUM, HARD;
+	
+		public static String getList() {
+			String str = "";
+			CPUState[] list = CPUState.values();
+			for (int i = 0; i < list.length; i++) {
+				str += list[i].ordinal() + " = " + list[i].name();
+				if (i != list.length - 1)
+					str += ", ";
+			}
+			return str;
+		}
+		
+		public static CPUState intToState(int ordinal) {
+			CPUState[] list = CPUState.values();
+			for (int i = 0; i < list.length; i++) {
+				if (ordinal == list[i].ordinal())
+					return list[i];
+			}
+			return CPUState.RANDOM;
+		}
+	}
 	
 	public CPUState difficulty;
 	public Random randy = new Random();
@@ -28,7 +49,7 @@ public class ComputerPlayerUnit {
 	}
 
 	private Coordinate calculateSmartMove(double blockingWeight, double expansionWeight) {
-        int[][] scores = new int[gridRef.lengths.rowCount][gridRef.lengths.colCount];
+        int[][] scores = new int[gridRef.lengths.colCount][gridRef.lengths.rowCount]; //Was swapped
         ScoreCalculator cloneCalc = new ScoreCalculator();
         Grid cloneGrid = createGridClone();
         
@@ -61,7 +82,7 @@ public class ComputerPlayerUnit {
 				}
 
                 double finalScore = computerGain + blockingValue + (expansionBonus * expansionWeight) - wallPenalty;
-                scores[y][x] = (int) (finalScore + 0.5); // Rounding
+                scores[y][x] = (int)(finalScore + 0.5); // Rounding
 
                 cloneGrid.resetCell(x, y);
             }
@@ -101,8 +122,8 @@ public class ComputerPlayerUnit {
 	
     private Grid createGridClone() {
         Grid clone = new Grid(gridRef.lengths.colCount, gridRef.lengths.rowCount);
-        for (int y = 0; y < gridRef.lengths.rowCount; y++) {
-            for (int x = 0; x < gridRef.lengths.colCount; x++) {
+        for (int y = 0; y < gridRef.lengths.colCount; y++) {
+            for (int x = 0; x < gridRef.lengths.rowCount; x++) {
                 clone.setCell(x, y, gridRef.getState(x, y));
             }
         }
@@ -116,7 +137,7 @@ public class ComputerPlayerUnit {
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == Owner.UNOWNED) {
+            if (isWithinBounds(nx, ny) && gridRef.getState(nx, ny) == Owner.UNOWNED) { //TODO: Consider changing this to isValid instead
                 bonus++;
             }
         }
@@ -126,8 +147,8 @@ public class ComputerPlayerUnit {
     private Coordinate findBestCoordinate(int[][] scores) {
         int currMax = -999;
         Coordinate bestCoord = null;
-        for (int y = 0; y < gridRef.lengths.rowCount; y++) {
-            for (int x = 0; x < gridRef.lengths.colCount; x++) {
+        for (int y = 0; y < gridRef.lengths.colCount; y++) { //Was swapped
+            for (int x = 0; x < gridRef.lengths.rowCount; x++) {
                 if (scores[y][x] > currMax) {
                     currMax = scores[y][x];
                     bestCoord = new Coordinate(x, y);
@@ -137,15 +158,16 @@ public class ComputerPlayerUnit {
         return bestCoord;
     }
 	
-    private boolean isWithinBounds(Coordinate c) {
-        return isWithinBounds(c.x, c.y);
-    }
+    private boolean isWithinBounds(Coordinate c) { return isWithinBounds(c.x, c.y); }
+    
     private boolean isWithinBounds(int x, int y) {
-        return x >= 0 && x < 8 && y >= 0 && y < 8;
+        return x >= 0 && x < gridRef.lengths.rowCount 
+        		&& y >= 0 && y < gridRef.lengths.colCount; //Several worked after being flipped //TODO: Investigate potential bugs further
     }
 
     private boolean isAtWall(int x, int y) {
-        return x == 0 || x == (8 - 1) || y == 0 || y == (8 - 1);
+        return x == 0 || x == (gridRef.lengths.rowCount - 1) 
+        		|| y == 0 || y == (gridRef.lengths.colCount - 1); //potentially broken
     }
 
     private Coordinate updatePastCoord(Coordinate c) {

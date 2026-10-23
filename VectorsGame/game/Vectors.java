@@ -8,78 +8,67 @@ import java.util.Scanner;
 
 public class Vectors {
 	private Highscore scores = new Highscore();
-	private int numRounds = 20;
+	private int rounds = 20;
 	private Grid gameGrid;
 	
-	public void setNumTurns(int numRounds) { //rounds > 0 and rounds < cellCount / 2
-		if (numRounds > 0 && numRounds < gameGrid.lengths.rowCount * gameGrid.lengths.colCount * 0.5)
-			this.numRounds = numRounds;
+	public void setNumTurns(int rounds) { //rounds > 0 and rounds < cellCount / 2
+		if (rounds > 0 && rounds < gameGrid.lengths.rowCount * gameGrid.lengths.colCount * 0.5)
+			this.rounds = rounds;
 	}
 	
 	public void run() {
-//		scores.forceReset();
+//		scores.forceReset(); //For force resetting the high score
 		Scanner scnr = new Scanner(System.in);
 
-		System.out.printf("Enter Grid Size Between y (1-32), x (1-32): ");
-		try {
-			Coordinate maxCoord = parseMove(scnr.nextLine());
-			if (maxCoord.x < 1 || maxCoord.y < 1)
-				throw new NumberFormatException();
-			gameGrid = new Grid(maxCoord.y, maxCoord.x);
-		}
-		catch (NumberFormatException e) {
-			System.out.println("Invalid input. Default 8 was used");
-			gameGrid = new Grid(8, 8);
-		}
+		Coordinate maxCoord = new Coordinate(-1, -1);
+		System.out.printf("Enter Grid Size Between y (1-26), x (1-26): ");
+		maxCoord = parseMove(scnr.nextLine());
+		if (maxCoord.x == -1) System.out.println("Invalid input. Default 8 was used");
+		gameGrid = new Grid(maxCoord.y, maxCoord.x);
 
 		System.out.printf("Please enter Num Turns (1-%d): ", (int)(gameGrid.lengths.rowCount * gameGrid.lengths.colCount * 0.5));
-		try { 
-			setNumTurns(scnr.nextInt());
-		}
+		try { setNumTurns(scnr.nextInt()); }
 		catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to 20"); }
 
-		System.out.printf("Please enter Difficulty, (0 = Random, 1 = Aggressive, 2 = Easy, 3 = Medium, 4 = Hard): ");
 		int select = 0;
+		System.out.printf("Please enter Difficulty, (%s): ", CPUState.getList());
 		try { select = scnr.nextInt(); }
 		catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to Random"); }
-		CPUState chosenDiff = CPUState.RANDOM;
-		if (select == 1) 	  chosenDiff = CPUState.AGGRESSIVE;
-		else if (select == 2) chosenDiff = CPUState.EASY;
-		else if (select == 3) chosenDiff = CPUState.MEDIUM;
-		else if (select == 4) chosenDiff = CPUState.HARD;
+		CPUState chosenDiff = CPUState.intToState(select);
 
 		System.out.printf("Rows use Letters? (y or n): ");
-		String in = scnr.next().trim();
-		gameGrid.abcRow = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		gameGrid.abcRow = isYes(scnr.next().trim());
+		
 		System.out.printf("Columns use Letters? (y or n): ");
-		in = scnr.next().trim();
-		gameGrid.abcCol = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		gameGrid.abcCol = isYes(scnr.next().trim());
+		
 		System.out.printf("Do you want to be able to overwrite owned cells? (y or n): ");
-		in = scnr.next().trim();
-		gameGrid.canOverride = in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
+		gameGrid.canOverride = isYes(scnr.next().trim());
+		
+		scnr.nextLine(); //use nextLine for Style input
 
-		System.out.printf("Style (0 = Default, 1 = Clean, 2 = Bold): ");		
-		scnr.nextLine(); //use nextLine for Round Input
+		System.out.printf("Style (%s): ", Style.getList());		
 		try { select = scnr.nextInt(); }
 		catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to Default"); }
-		if (select == 1) 	  { Styles.setAllStyles(Style.Clean); }
-		else if (select == 2) { Styles.setAllStyles(Style.Bold); }
-		else 				  { Styles.setAllStyles(Style.Default); }
+		Styles.setAllStyles(Style.intToState(select));
+		
 		scnr.nextLine(); //use nextLine for Round Input
 
+		Styles.constructGridHeadAndFoot(gameGrid.lengths.rowCount); //possibly backwards
 
 		ComputerPlayerUnit cpu = new ComputerPlayerUnit(chosenDiff, gameGrid);
 		ScoreCalculator scoreCalc = new ScoreCalculator();
 		
-		for (int i = 0; i < numRounds; i++) {
+		for (int i = 0; i < rounds; i++) {
 			round(i, cpu, scoreCalc, scnr);
 		}
-		printRound(numRounds, scoreCalc);
+		printRound(rounds, scoreCalc);
 		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
-
-		if (scoreCalc.getPlayerScore() > scores.score.getScore()) {
+		
+		int score = scoreCalc.getPlayerScore() - scoreCalc.getComputerScore();
+		if (score > scores.score.getScore()) {
 			System.out.printf("\n\nNew Record!\nPlease Enter Your Name: ");
-			scores.saveScore(new Score(scoreCalc.getPlayerScore(), scnr.nextLine()));
+			scores.saveScore(new Score(score, scnr.nextLine()));
 			scores.saveFile();
 		}
 		scnr.close();
@@ -107,6 +96,7 @@ public class Vectors {
 		}
 		
 		Coordinate cpuCoord = cpu.getTurn();
+		System.out.printf("CPU(X) Turn (Row Col): %d %d", cpuCoord.y, cpuCoord.x);
 		gameGrid.setCell(cpuCoord.x, cpuCoord.y, Owner.COMPUTER);
 		scoreCalc.updateScores(gameGrid);
 	}
@@ -116,40 +106,38 @@ public class Vectors {
 		System.out.printf("%s High Score: %s – %-5d\t     %s\n", Styles.dash, scores.score.getName(), scores.score.getScore(), Styles.vertbar);
 		System.out.printf("%s%s Player Score:\t %4d Last Round%4d %s\n", Styles.lnbreak, Styles.dash, scoreCalc.getPlayerScore(), prevPScore, Styles.vertbar);
 		System.out.printf("%s Computer Score:%4d Last Round%4d %s\n%s", Styles.dash, scoreCalc.getComputerScore(), prevCScore, Styles.vertbar, Styles.lnbreak);
-		System.out.printf("%s Turn %2d of %2d\t\t\t     %s\n%s", Styles.dash, roundNum, numRounds, Styles.vertbar, Styles.foot);
+		System.out.printf("%s Turn %2d of %2d\t\t\t     %s\n%s", Styles.dash, roundNum, rounds, Styles.vertbar, Styles.foot);
 		gameGrid.printGrid();
 	}
 	
 	
 	//	Input Parsing
 
-	private static Coordinate parseMove(String input) {
-		input = input.trim().toUpperCase();
-
-		if (input.matches("[A-`0-9]{2}")) { //Sees if input is A-~ or single digit char in a 2 long string
-			return new Coordinate(
-				parseCoord(input.charAt(1) + ""),
-				parseCoord(input.charAt(0) + "")
-			);
+	private static Coordinate parseMove(String in) {
+		in = in.trim().toUpperCase();
+		if (in.matches("[A-Z0-9]{2}")) { //Sees if input is A-Z or single digit char in a 2 long string
+			return new Coordinate(parseCoord(in.charAt(1) + ""), parseCoord(in.charAt(0) + ""));
 		}
 
-		String[] parts = input.split("[,.\\s]+"); //'\\s' and ',.' handles potential whitespace 
-
+		String[] parts = in.split("[,.\\s]+"); //'\\s' and ',.' handles potential whitespace 
 		if (parts.length != 2) {
 			System.out.println("Invalid coordinate");
 			return new Coordinate(-1, -1); //Returns invalid coord
 		}
 
-		return new Coordinate(parseCoord(parts[1]), parseCoord(parts[0])
-		);
+		return new Coordinate(parseCoord(parts[1]), parseCoord(parts[0]));
 	}
 
-	private static int parseCoord(String input) {
-		input = input.trim().toUpperCase();
+	private static int parseCoord(String in) {
+		in = in.trim().toUpperCase();
 
-		if (input.length() == 1 && Character.isLetter(input.charAt(0))) {
-			return input.charAt(0) - 'A';
+		if (in.length() == 1 && Character.isLetter(in.charAt(0))) {
+			return in.charAt(0) - 'A';
 		}
-		return Integer.parseInt(input);
+		return Integer.parseInt(in);
+	}
+	
+	private static boolean isYes(String in) {
+		return in.equalsIgnoreCase("yes") || in.equalsIgnoreCase("y") || in.equalsIgnoreCase("true");
 	}
 }
