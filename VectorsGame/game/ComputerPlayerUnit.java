@@ -28,7 +28,6 @@ public class ComputerPlayerUnit {
 		return CPUState.RANDOM;
 	}
 
-	private Random randy = new Random();	
 //	public Coordinate getTurn(Coordinate prevCoord, CPUState difficulty, Grid grid) {
 //        // TODO: Adjust weights as after the ScoreCalculator patch adding in overlapping, blocking is much less effective
 //		if (difficulty == CPUState.AGGRESSIVE)	{
@@ -61,7 +60,7 @@ public class ComputerPlayerUnit {
 		else if (difficulty == CPUState.EASY)	{ 
             return getEasyMove(data.grid, data.prevCompCoord); 
         }
-		return getRandomMove(data.grid);
+		return getRandomMove(data.grid, new Random());
 	}
 
 	private Coordinate calculateSmartMove(Grid grid, double blockingWeight, double expansionWeight) {
@@ -107,7 +106,7 @@ public class ComputerPlayerUnit {
     }
 
     private Coordinate getEasyMove(Grid grid, Coordinate prevCoord) {
-        if (prevCoord.x == -1) return getRandomMove(grid);
+        if (prevCoord.x == -1) return getRandomMove(grid, new Random());
 
         int[] dx = {0, 0, 1, -1};
         int[] dy = {1, -1, 0, 0};
@@ -122,13 +121,13 @@ public class ComputerPlayerUnit {
                 return vCoord;
             }
         }
-        return getRandomMove(grid);
+        return getRandomMove(grid, new Random());
     }
 
-    private Coordinate getRandomMove(Grid grid) {
+    private Coordinate getRandomMove(Grid grid, Random rand) {
         Coordinate coord;
         do {
-            coord = new Coordinate(randy.nextInt(grid.getRowCount()), randy.nextInt(grid.getColCount()));
+            coord = new Coordinate(rand.nextInt(grid.getRowCount()), rand.nextInt(grid.getColCount()));
         } while (grid.getState(coord.y, coord.x) != Owner.UNOWNED);
         
         //prevCoord = coord;
