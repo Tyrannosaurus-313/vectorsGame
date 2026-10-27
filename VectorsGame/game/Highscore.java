@@ -23,11 +23,11 @@ public class Highscore {
 			in = new ObjectInputStream(inFile);
 			score = (Score) in.readObject();
 			in.close();
-			inFile.close();
+			inFile.close(); //Potential failure to close if an exception occurs
 		}
 		catch (FileNotFoundException ex)	{ ex.printStackTrace(); }
-		catch (IOException ex) 				{ ex.printStackTrace(); } 
-		catch (ClassNotFoundException ex)	{ ex.printStackTrace(); }		
+		catch (IOException ex) 				{ ex.printStackTrace(); }
+		catch (ClassNotFoundException ex)	{ ex.printStackTrace(); }
 	}
 	
 	public void saveFile() {
@@ -38,7 +38,7 @@ public class Highscore {
 			out = new ObjectOutputStream(outFile);
 			out.writeObject(score);
 			out.close();
-			outFile.close();
+			outFile.close(); //Potential failure to close if an exception occurs
 		}
 		catch (FileNotFoundException ex)	{ ex.printStackTrace(); }
 		catch (IOException ex) 				{ ex.printStackTrace(); }
