@@ -29,21 +29,39 @@ public class ComputerPlayerUnit {
 	}
 
 	private Random randy = new Random();	
-	public Coordinate getTurn(Coordinate prevCoord, CPUState difficulty, Grid grid) {
+//	public Coordinate getTurn(Coordinate prevCoord, CPUState difficulty, Grid grid) {
+//        // TODO: Adjust weights as after the ScoreCalculator patch adding in overlapping, blocking is much less effective
+//		if (difficulty == CPUState.AGGRESSIVE)	{
+//            return calculateSmartMove(grid, 10.0, 0.45); 
+//        }
+//		else if (difficulty == CPUState.HARD)	{ 
+//            return calculateSmartMove(grid, 3.0, 0.45); 
+//        }
+//		else if (difficulty == CPUState.MEDIUM) { 
+//            return calculateSmartMove(grid, 0.4, 0.49); 
+//        }
+//		else if (difficulty == CPUState.EASY)	{ 
+//            return getEasyMove(grid, prevCoord); 
+//        }
+//		return getRandomMove(grid);
+//	}
+	
+
+	public Coordinate getTurn(GameData data, CPUState difficulty) {
         // TODO: Adjust weights as after the ScoreCalculator patch adding in overlapping, blocking is much less effective
 		if (difficulty == CPUState.AGGRESSIVE)	{
-            return calculateSmartMove(grid, 10.0, 0.45); 
+            return calculateSmartMove(data.grid, 10.0, 0.45); 
         }
 		else if (difficulty == CPUState.HARD)	{ 
-            return calculateSmartMove(grid, 3.0, 0.45); 
+            return calculateSmartMove(data.grid, 3.0, 0.45); 
         }
 		else if (difficulty == CPUState.MEDIUM) { 
-            return calculateSmartMove(grid, 0.4, 0.49); 
+            return calculateSmartMove(data.grid, 0.4, 0.49); 
         }
 		else if (difficulty == CPUState.EASY)	{ 
-            return getEasyMove(grid, prevCoord); 
+            return getEasyMove(data.grid, data.prevCompCoord); 
         }
-		return getRandomMove(grid);
+		return getRandomMove(data.grid);
 	}
 
 	private Coordinate calculateSmartMove(Grid grid, double blockingWeight, double expansionWeight) {

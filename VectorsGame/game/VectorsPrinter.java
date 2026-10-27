@@ -2,7 +2,7 @@ package game;
 
 public class VectorsPrinter {
 	
-	public static void printRound(int turns, int roundNum, ScoreCalculator scoreCalc, Highscore scores, int prevPScore, int prevCScore, Grid gameGrid) {
+	public static void printRound(int turns, int roundNum, ScoreCalculator scoreCalc, int prevPScore, int prevCScore, Grid gameGrid, Highscore scores) {
 		Styles.Theme t = Styles.currentTheme;
 		System.out.printf("\n%s%s V E C T O R S                      %s\n%s", t.header, t.dash, t.vertbar, t.lnbreak);
 		System.out.printf("%s High Score: %s – %-5d\t     %s\n", t.dash, scores.score.getName(), scores.score.getScore(), t.vertbar);

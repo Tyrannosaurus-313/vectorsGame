@@ -65,15 +65,20 @@ public class Vectors {
 		
 		int prevPScore = 0;
 		int prevCScore = 0;
+		GameData data = new GameData(turns, gameGrid);
 		Coordinate prevCoord = new Coordinate(-1, -1);
 		for (int i = 0; i < turns; i++) {
-			VectorsPrinter.printRound(turns, i, scoreCalc, scores, prevPScore, prevCScore, gameGrid);
+			VectorsPrinter.printRound(turns, i, scoreCalc, prevPScore, prevCScore, gameGrid, scores);
 			VectorsPrinter.printGrid(gameGrid, abcCol, abcRow);
+			data.updateScore();
+			data.currentTurn = i;
 			prevPScore = scoreCalc.getPlayerScore();
 			prevCScore = scoreCalc.getComputerScore();
-			prevCoord = round(turns, i, cpu, scoreCalc, scnr, prevPScore, prevCScore, prevCoord, chosenDiff, gameGrid);
+//			prevCoord = round(cpu, scoreCalc, scnr, prevPScore, prevCScore, prevCoord, chosenDiff, gameGrid);
+			prevCoord = round(data, cpu, scnr, chosenDiff);
+			data.prevCompCoord = prevCoord;//Do this directly if we switch to using data.
 		}
-		VectorsPrinter.printRound(turns, turns, scoreCalc, scores, prevPScore, prevCScore, gameGrid);
+		VectorsPrinter.printRound(turns, turns, scoreCalc, prevPScore, prevCScore, gameGrid, scores);
 		VectorsPrinter.printGrid(gameGrid, abcCol, abcRow);
 		System.out.printf("\n\nGame Over %s\n", scoreCalc.getWhoIsWinner());
 		
@@ -86,7 +91,8 @@ public class Vectors {
 		scnr.close();
 	}
 	
-	public Coordinate round(int turns, int roundNum, ComputerPlayerUnit cpu, ScoreCalculator scoreCalc, Scanner scnr, int prevPScore, int prevCScore, Coordinate prevCoord, CPUState difficulty, Grid grid) {
+
+	public Coordinate round(GameData data, ComputerPlayerUnit cpu, Scanner scnr, CPUState difficulty) {
 		boolean turnOver = false;
 		while (!turnOver) {
 			System.out.printf("Player(X) Turn (Row Col): ");
@@ -94,19 +100,41 @@ public class Vectors {
 
 			try {
 				Coordinate moveCoord = parseMove(input);
-				turnOver = grid.setCell(moveCoord.y, moveCoord.x, Owner.PLAYER);
+				turnOver = data.grid.setCell(moveCoord.y, moveCoord.x, Owner.PLAYER);
 			}
 			catch (NumberFormatException e) {
 				System.out.println("Invalid input. Please enter numbers only.");
 			}
 		}
 
-		Coordinate cpuCoord = cpu.getTurn(prevCoord, difficulty, grid);
+		Coordinate cpuCoord = cpu.getTurn(data, difficulty);
 		System.out.printf("CPU(X) Turn (Row Col): %d %d", cpuCoord.y, cpuCoord.x);
-		grid.setCell(cpuCoord.y, cpuCoord.x, Owner.COMPUTER);
-		scoreCalc.updateScores(grid);
+		data.grid.setCell(cpuCoord.y, cpuCoord.x, Owner.COMPUTER);
+		data.scoreCalc.updateScores(data.grid);
 		return cpuCoord;
 	}
+	
+//	public Coordinate round(ComputerPlayerUnit cpu, ScoreCalculator scoreCalc, Scanner scnr, int prevPScore, int prevCScore, Coordinate prevCoord, CPUState difficulty, Grid grid) {
+//		boolean turnOver = false;
+//		while (!turnOver) {
+//			System.out.printf("Player(X) Turn (Row Col): ");
+//			String input = scnr.nextLine().trim();
+//
+//			try {
+//				Coordinate moveCoord = parseMove(input);
+//				turnOver = grid.setCell(moveCoord.y, moveCoord.x, Owner.PLAYER);
+//			}
+//			catch (NumberFormatException e) {
+//				System.out.println("Invalid input. Please enter numbers only.");
+//			}
+//		}
+//
+//		Coordinate cpuCoord = cpu.getTurn(prevCoord, difficulty, grid);
+//		System.out.printf("CPU(X) Turn (Row Col): %d %d", cpuCoord.y, cpuCoord.x);
+//		grid.setCell(cpuCoord.y, cpuCoord.x, Owner.COMPUTER);
+//		scoreCalc.updateScores(grid);
+//		return cpuCoord;
+//	}
 		
 	//	Input Parsing
 
