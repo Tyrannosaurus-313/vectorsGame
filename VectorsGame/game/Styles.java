@@ -41,23 +41,23 @@ public class Styles {
 			this.vertbar = vertBar;
         }
 		
-		public static String getList() {
-			String str = "";
-			Theme[] themes = Theme.values();
-			for (int i = 0; i < themes.length; i++) {
-				str += themes[i].ordinal() + " = " + themes[i].name();
-				if (i != themes.length - 1)
-					str += ", ";
-			}
-			return str;
-		}
+		// public static String getList() {
+		// 	String str = "";
+		// 	Theme[] themes = Theme.values();
+		// 	for (int i = 0; i < themes.length; i++) {
+		// 		str += themes[i].ordinal() + " = " + themes[i].name();
+		// 		if (i != themes.length - 1)
+		// 			str += ", ";
+		// 	}
+		// 	return str;
+		// }
 		
-        public static Theme themeFromInt(int ordinal) {
-            Theme[] values = Theme.values();
-            if (ordinal < 0 || ordinal >= values.length) 
-				return DEFAULT;
-            return values[ordinal];
-        }
+        // public static Theme themeFromInt(int ordinal) {
+        //     Theme[] values = Theme.values();
+        //     if (ordinal < 0 || ordinal >= values.length) 
+		// 		return DEFAULT;
+        //     return values[ordinal];
+        // }
     }
 
     public static Theme currentTheme = Theme.DEFAULT;

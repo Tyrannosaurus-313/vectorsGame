@@ -16,8 +16,8 @@ public class Highscore {
 	}
 	
 	public void loadFile() {
-		FileInputStream inFile;
-		ObjectInputStream in;
+		FileInputStream inFile = null;
+		ObjectInputStream in = null;
 		try {
 			inFile = new FileInputStream(filename);
 			in = new ObjectInputStream(inFile);
@@ -25,14 +25,20 @@ public class Highscore {
 			in.close();
 			inFile.close(); //Potential failure to close if an exception occurs
 		}
-		catch (FileNotFoundException ex)	{ ex.printStackTrace(); }
+		catch (FileNotFoundException ex)	{ /* We can just use the default score */ }
 		catch (IOException ex) 				{ ex.printStackTrace(); }
-		catch (ClassNotFoundException ex)	{ ex.printStackTrace(); }
+		catch (ClassNotFoundException ex)	{ ex.printStackTrace(); }		
+		finally { 			
+			try {
+				if (in != null) in.close();
+				if (inFile != null) inFile.close();
+			} catch (IOException ex) { System.err.println("Error closing high score file: " + ex.getMessage()); }
+		}
 	}
 	
 	public void saveFile() {
-		FileOutputStream outFile;
-		ObjectOutputStream out;
+		FileOutputStream outFile = null;
+		ObjectOutputStream out = null;
 		try {
 			outFile = new FileOutputStream(filename);
 			out = new ObjectOutputStream(outFile);
@@ -42,6 +48,12 @@ public class Highscore {
 		}
 		catch (FileNotFoundException ex)	{ ex.printStackTrace(); }
 		catch (IOException ex) 				{ ex.printStackTrace(); }
+		finally { 			
+			try {
+				if (out != null) out.close();
+				if (outFile != null) outFile.close();
+			} catch (IOException ex) { System.err.println("Error closing high score file: " + ex.getMessage()); }
+		}
 	}
 	
 	public void saveScore(Score newScore) {

@@ -1,6 +1,6 @@
 package game;
 
-public class GameData { //Data useful for the Computer Player
+public class GameData { //Holds data theoretically useful for the Computer Player
 	public int currentTurn;
 	public int totalTurns;
 	
@@ -8,7 +8,7 @@ public class GameData { //Data useful for the Computer Player
 	
 	public Grid grid;
 	
-	public Coordinate prevPlayerCoord;
+	// public Coordinate prevPlayerCoord; Unused
 	public Coordinate prevCompCoord;
 	
 	public int prevPScore = 0;
@@ -20,6 +20,7 @@ public class GameData { //Data useful for the Computer Player
 	}
 	
 	public void updateScore() {
+		scoreCalc.updateScores(grid);
 		prevPScore = scoreCalc.getPlayerScore();
 		prevCScore = scoreCalc.getComputerScore();
 	}

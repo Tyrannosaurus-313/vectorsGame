@@ -7,76 +7,61 @@ public class ScoreCalculator {
 	private int computerScore;
 	public int getPlayerScore() 	{ return playerScore; }
 	public int getComputerScore()	{ return computerScore; }
+    public int getNetScore() { return playerScore - computerScore; }
 	
-	enum Direction { HORIZONTAL, VERTICAL, DIAG_MAIN, DIAG_ANTI }; //Null is unclaimed
+	public enum Direction { HORIZONTAL, VERTICAL, DIAG_MAIN, DIAG_ANTI };
 
-	public static Direction intToDirection(int ordinal) {
-		Direction[] list = Direction.values();
-		for (int i = 0; i < list.length; i++) {
-			if (ordinal == list[i].ordinal())
-				return list[i];
-		}
-		return Direction.HORIZONTAL;
-	}
-
-    //In the deltas, it is (row, col) where 1 means incrementing by 1, 0 means no incrementing, and -1 is decrementing in th corresponding array position.
     private static final int[][] DELTAS = {{0, 1}, {1, 0}, {1, 1}, {1, -1}};
     private int[] delta(int ordinal) { return DELTAS[ordinal]; }
 
-	public void updateScores(Grid gameGrid) {
-		int rows = gameGrid.getRowCount();
-		int cols = gameGrid.getColCount();
+    public void updateScores(Grid grid) {
+		int rows = grid.getRowCount();
+		int cols = grid.getColCount();
 		playerScore = 0;
 		computerScore = 0;
 		Direction[][] claimed = new Direction[rows][cols];
 
 		//Search from chain length 5 down to 3
+        int r;
+        int c;
         for (int len = 5; len >= 3; len--) {
-            // Horizontal: r in [0, rows), c in [0, cols-len]
-            for (int r = 0; r < rows; r++) {
-                for (int c = 0; c <= cols - len; c++) {
-                    if (isLineValid(gameGrid, r, c, len, Direction.HORIZONTAL, delta(Direction.HORIZONTAL.ordinal()), claimed)) {
-                        markUsed(claimed, r, c, len, Direction.HORIZONTAL, delta(Direction.HORIZONTAL.ordinal()));
-                        computeScore(gameGrid.getState(r, c), len);
-                    }
+            // Horizontal
+            for (r = 0; r < rows; r++) {
+                for (c = 0; c <= cols - len; c++) {
+                    processDirection(grid, r, c, len, claimed, Direction.HORIZONTAL);
                 }
             }
             
-            for (int r = 0; r <= rows - len; r++) {
-                // Vertical: r in [0, rows-len], c in [0, cols)
-                for (int c = 0; c < cols; c++) {
-                    if (isLineValid(gameGrid, r, c, len, Direction.VERTICAL, delta(Direction.VERTICAL.ordinal()), claimed)) {
-                        markUsed(claimed, r, c, len, Direction.VERTICAL, delta(Direction.VERTICAL.ordinal()));
-                        computeScore(gameGrid.getState(r, c), len);
-                    }
-                    
-                    //Could I use an if statement up here to run diagonal & anti diagonal?
+            for (r = 0; r <= rows - len; r++) {
+                // Vertical
+                for (c = 0; c < cols; c++) {
+                    processDirection(grid, r, c, len, claimed, Direction.VERTICAL);
                 }
                 
-                // Anti-diagonal (/): r in [0, rows-len], c in [len-1, cols)
-                for (int c = len - 1; c < cols; c++) {
-                    if (isLineValid(gameGrid, r, c, len, Direction.DIAG_ANTI, delta(Direction.DIAG_ANTI.ordinal()), claimed)) {
-                        markUsed(claimed, r, c, len, Direction.DIAG_ANTI, delta(Direction.DIAG_ANTI.ordinal()));
-                        computeScore(gameGrid.getState(r, c), len);
-                    }
+                // Diagonal main (\)
+                for (c = 0; c <= cols - len; c++) {
+                    processDirection(grid, r, c, len, claimed, Direction.DIAG_MAIN);
                 }
-
-                // Diagonal main (\): r in [0, rows-len], c in [0, cols-len]
-                for (int c = 0; c <= cols - len; c++) {
-                    if (isLineValid(gameGrid, r, c, len, Direction.DIAG_MAIN, delta(Direction.DIAG_MAIN.ordinal()), claimed)) {
-                        markUsed(claimed, r, c, len, Direction.DIAG_MAIN, delta(Direction.DIAG_MAIN.ordinal()));
-                        computeScore(gameGrid.getState(r, c), len);
-                    }
+                
+                // Anti-diagonal (/)
+                for (c = len - 1; c < cols; c++) {
+                    processDirection(grid, r, c, len, claimed, Direction.DIAG_ANTI);
                 }
             }
         }
+	}
+    
+	private void processDirection(Grid grid, int r, int c, int len, Direction[][] claimed, Direction dir) {
+		if (isLineValid(grid, r, c, len, dir, delta(dir.ordinal()), claimed)) {
+			markUsed(claimed, r, c, len, dir, delta(dir.ordinal()));
+			computeScore(grid.getState(r, c), len);
+	    }
 	}
 	
     private boolean isLineValid(Grid grid, int r, int c, int len, Direction dir, int[] delta, Direction[][] claimed) {
         Owner owner = grid.getState(r, c);
         
-        // A line cannot be formed if the starting cell is empty/null
-        if (owner == Owner.UNOWNED)
+        if (owner == Owner.UNOWNED) // Early exit for Unowned Cells
              return false;
 
         for (int i = 0; i < len; i++) {

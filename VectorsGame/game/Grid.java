@@ -1,17 +1,16 @@
 package game;
 
 public class Grid {
-	// TODO: May want to eliminate this enum.
 	enum Owner {
-		UNOWNED(' '), PLAYER('X'), COMPUTER('C'); //Null is Uncontrolled/Empty
+		UNOWNED(' '), PLAYER('X'), COMPUTER('C');
 		final char rep;
 		Owner(char c) { this.rep = c; }
 	}
-	
-	private final Owner[][] worldGrid;
-	
-	// TODO: Consider getting rid of these global variables.
+
 	private final boolean canOverride;
+	public boolean getCanOverride() { return canOverride; };
+
+	private final Owner[][] worldGrid;
 	
 	public int getColCount() {
 		return worldGrid[0].length;
@@ -39,7 +38,7 @@ public class Grid {
 	}
 	
 	public void resetCell(int r, int c) {
-		if (r < worldGrid.length && c < worldGrid[0].length)
+		if (inBounds(r, c))
 			worldGrid[r][c] = Owner.UNOWNED;	
 	}
 	
