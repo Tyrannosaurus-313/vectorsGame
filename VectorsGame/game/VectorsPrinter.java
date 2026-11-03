@@ -8,9 +8,9 @@ public class VectorsPrinter {
 	
 	public void printRound(int turns, int roundNum, ScoreCalculator scoreCalc, int prevPScore, int prevCScore, Grid gameGrid, Highscore scores) {
 		Styles.Theme t = Styles.currentTheme;
-		System.out.printf("\n%s%s V E C T O R S                      %s\n%s", t.header, t.dash, t.vertbar, t.lnbreak);
+		System.out.printf("\n%s V E C T O R S                      %s\n%s", t.header + t.dash, t.vertbar, t.lnbreak);
 		System.out.printf("%s High Score: %s – %-5d\t     %s\n", t.dash, scores.score.getName(), scores.score.getScore(), t.vertbar);
-		System.out.printf("%s%s Player Score:\t %4d Last Round%4d %s\n", t.lnbreak, t.dash, scoreCalc.getPlayerScore(), prevPScore, t.vertbar);
+		System.out.printf("%s Player Score:\t %4d Last Round%4d %s\n", t.lnbreak + t.dash, scoreCalc.getPlayerScore(), prevPScore, t.vertbar);
 		System.out.printf("%s Computer Score:%4d Last Round%4d %s\n%s", t.dash, scoreCalc.getComputerScore(), prevCScore, t.vertbar, t.lnbreak);
 		System.out.printf("%s Turn %2d of %2d\t\t\t     %s\n%s", t.dash, roundNum, turns, t.vertbar, t.foot);
 	}

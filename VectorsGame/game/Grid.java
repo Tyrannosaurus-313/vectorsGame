@@ -8,7 +8,9 @@ public class Grid {
 	}
 
 	private final boolean canOverride;
-	public boolean getCanOverride() { return canOverride; };
+	public boolean getCanOverride() { 
+		return canOverride; 
+	}
 
 	private final Owner[][] worldGrid;
 	
@@ -21,7 +23,7 @@ public class Grid {
 	
 	public Grid(int maxY, int maxX, boolean canOverride) {
 		this.canOverride = canOverride;
-
+		
 		if (maxY > 26 || maxY < 1) maxY = 8;
 		if (maxX > 26 || maxX < 1) maxX = 8;
 		

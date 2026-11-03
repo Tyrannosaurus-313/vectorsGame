@@ -6,26 +6,6 @@ import java.util.Random;
 public class ComputerPlayer {
 	public enum Difficulty { RANDOM, AGGRESSIVE, EASY, MEDIUM, HARD; } 
 	
-	// public static String getList() {
-	// 	String str = "";
-	// 	Difficulty[] list = Difficulty.values();
-	// 	for (int i = 0; i < list.length; i++) {
-	// 		str += list[i].ordinal() + " = " + list[i].name();
-	// 		if (i != list.length - 1)
-	// 			str += ", ";
-	//     }
-	// 	return str;
-	// }
-		
-	// public static Difficulty intToState(int ordinal) {
-	// 	Difficulty[] list = Difficulty.values();
-	// 	for (int i = 0; i < list.length; i++) {
-	// 		if (ordinal == list[i].ordinal())
-	// 			return list[i];
-	// 	}
-	// 	return Difficulty.RANDOM;
-	// }	
-
 	public Coordinate getTurn(GameData data, Difficulty difficulty) {
         if (difficulty == Difficulty.AGGRESSIVE)	{
             return calculateSmartMove(data.grid, 10.0, 0.45); 
@@ -130,7 +110,7 @@ public class ComputerPlayer {
         for (int i = 0; i < 4; i++) {
             int ny = y + dy[i];
             int nx = x + dx[i];
-            if (isWithinBounds(grid, ny, nx) && grid.getState(ny, nx) == Owner.UNOWNED) {
+            if (isWithinBounds(grid, ny, nx) && grid.getState(ny, nx) == Owner.COMPUTER) { 
                 bonus++;
             }
         }

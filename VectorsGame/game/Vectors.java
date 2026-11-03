@@ -31,11 +31,7 @@ public class Vectors {
 		}
 		catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to 20"); }
 
-		int select = getInputFromEnum(scnr, Difficulty.class);//0;
-		// System.out.printf("Please enter Difficulty, (%s): ", ComputerPlayerUnit.getList());
-		// try { select = scnr.nextInt(); }
-		// catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to Random"); }
-		// Difficulty chosenDiff = ComputerPlayerUnit.intToState(select);
+		int select = getInputFromEnum(scnr, Difficulty.class);
 		Difficulty chosenDiff = fromOrdinal(Difficulty.class, select);
 
 		System.out.printf("Rows use Letters? (y or n): ");
@@ -51,11 +47,8 @@ public class Vectors {
 		
 		scnr.nextLine(); //consume the next line
 
-		select = getInputFromEnum(scnr, Theme.class);//0;
-		// System.out.printf("Style (%s): ", Theme.getList());		
-		// try { select = scnr.nextInt(); }
-		// catch (InputMismatchException e) { System.out.println("Invalid input. Defaulting to Default"); }
-		Styles.currentTheme = fromOrdinal(Theme.class, select);//Theme.themeFromInt(select);
+		select = getInputFromEnum(scnr, Theme.class);
+		Styles.currentTheme = fromOrdinal(Theme.class, select);
 		
 		scnr.nextLine(); //Consume the next line
 
