@@ -130,7 +130,7 @@ public class Vectors {
 
 
 
-	// Enum Input Parsing using generics (Apparently you can't make a new extended enum class so this was the next best thing)
+	// Enum Input Parsing using generics (Apparently you can't make a direct child of the enum class so this was the next best thing)
 
 	private <E extends Enum<E>> int getInputFromEnum(Scanner scnr, Class<E> enumClass) {
 		int select = 0;

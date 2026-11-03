@@ -1,6 +1,6 @@
 package game;
 
-public class GameData { //Holds data theoretically useful for the Computer Player
+public class GameData { //data useful for the Computer Player
 	public int currentTurn;
 	public int totalTurns;
 	
@@ -8,7 +8,6 @@ public class GameData { //Holds data theoretically useful for the Computer Playe
 	
 	public Grid grid;
 	
-	// public Coordinate prevPlayerCoord; Unused
 	public Coordinate prevCompCoord;
 	
 	public int prevPScore = 0;
